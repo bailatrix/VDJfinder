@@ -3,6 +3,14 @@ from os.path import isfile
 from os.path import getsize
 from Bio.SeqIO import parse
 
+def prep_dict( a_dict ):
+    has_val = {}
+    
+    for key,val in a_dict.items():
+        if val:
+            has_val[key] = val
+    return has_val
+
 def prep_pseudo_file( gene_file, force=False ):
     out_name = basename(gene_file).replace('.fasta', '_pseudogenes_found.pickle')
     out_file = f'./output/{out_name}'
@@ -39,11 +47,12 @@ def prep_output( gene_file, force=False ):
     else:
         return out_file, 'w'
 
-def prep_database( gene_file ):
+# Prepare local reference database
+def prep_database( ref_file ):
     seq_dict   = {} # Dictionary of D gene sequences (key = allele, value = sequence)
     type_dict  = {} # Dictionary of D gene types (key = allele, value = gene type)
 
-    for nt in parse(gene_file, "fasta"):
+    for nt in parse(ref_file, "fasta"):
         nts    = str(nt.seq).lower()
         p = nt.description.split('|')
         allele = p[1]

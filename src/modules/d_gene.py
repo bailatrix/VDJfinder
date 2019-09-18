@@ -12,6 +12,117 @@ from re import match
 # homemade programs
 from modules import prep_IO
 
+# Motif description: Due to short length and lack of highly conserved regions, motif needs to include heptamers
+# Motif description: Look for 10-37 bases flanked by three conserved nt on each side plus additional conserved nt
+default = { 
+    'IGH': {
+        'motif': '[acgt]ac[acgt]gtg[actg]{10,37}cac[acgt]g[actg]{2}',
+        'up_hept_cons': 'cactgtg',
+        'up_nona_cons': 'tgtttttgg',       #RSS question of whether last base is g or t
+        'down_hept_cons': 'cacagtg',
+        'down_nona_cons': 'acaaaaacc',
+        'up_hept_match_min': 5,
+        'up_nona_match_min': 4,
+        'down_hept_match_min': 5,
+        'down_nona_match_min': 4,
+        'total_match_min': 22
+        },
+    
+    'TRB': {
+        'motif': '[acgt]ac[acgt]gtg[actg]{10,37}cac[acgt]g[actg]{2}',
+        'up_hept_cons': 'cactgtg',
+        'up_nona_cons': 'tgtttttgg',       #RSS question of whether last base is g or t
+        'down_hept_cons': 'cacagtg',
+        'down_nona_cons': 'acaaaaacc',
+        'up_hept_match_min': 0,
+        'up_nona_match_min': 0,
+        'down_hept_match_min': 0,
+        'down_nona_match_min': 0,
+        'total_match_min': 0
+        }
+    }
+
+# Default parameters should be used for gene searches in external programs
+# Set warnings for screening user-input in the case that default parameters are not used 
+# Potential problems: Too low = false positives, too high = loss of real genes
+warnings = {
+    'motif': 'Using an untested search motif is not recommended.',
+    'up_hept_cons': '',
+    'up_nona_cons': '',
+    'down_hept_cons': '', 
+    'down_nona_cons': '', 
+    'up_hept_match_min': '',
+    'up_nona_match_min': '',
+    'down_hept_match_min': '',
+    'down_nona_match_min': '',
+    'total_match_min': ''
+    }
+
+# Columns to organize values collected during search for output file
+out_columns = {
+    'allele': 'Allele',
+    'gene_len': 'Gene Length',
+    'st_nt': 'Start Nucleotide',
+    'end_nt': 'End Nucleotide',
+    'up_hept': 'Upstream Heptamer',
+    'up_hept_match': 'Upsteam Heptamer Match',
+    'up_nona': 'Upstream Nonamer',
+    'up_nona_match': 'Upstream Nonamer Match',
+    'up_spacer': 'Upstream Spacer',
+    'up_total_match': 'Upstream Total Match',
+    'down_hept': 'Downstream Heptamer',
+    'down_hept_match': 'Downstream Heptamer Match',
+    'down_nona': 'Downstream Nonamer',
+    'down_nona_match': 'Downstream Nonamer Match',
+    'down_spacer': 'Downstream Spacer',
+    'down_total_match': 'Downstream Total Match',
+    'total_match': 'Total Match',
+    'notes': 'Notes'
+   }
+
+class IGHD_gene ():
+    default_rules = default
+    
+    def __init__ ( gene, heptamer, nonamer ):
+        self.gene = gene
+        self.heptamer = heptamer
+        self.nonamer = nonamer
+        self.matches = {}
+        self.rules = {}
+    
+    def set_matches ( self, up_hept_match, up_nona_match, up_total_match,
+                     down_hept_match, down_nona_match, down_total_match, total_match ):
+        self.matches = {
+            'Upstream Heptamer Match': up_hept_match,
+            'Upstream Nonamer Match': up_nona_match,
+            'Upstream Total Match': up_total_match,
+            'Downstream Heptamer Match': down_hept_match,
+            'Downstream Nonamer Match': down_nona_match,
+            'Downstream Total Match': down_total_match,
+            'Total Match': total_match,
+                       }
+        
+    def set_rules ( self, motif,
+                   up_hept_cons, up_nona_cons, down_hept_cons,  down_nona_cons,
+                   up_hept_match_min, up_nona_match_min, down_hept_match_min, down_nona_match_min, total_match_min ):
+        self.rules = {motif,
+                        up_hept_cons
+                        up_nona_cons,
+                        down_hept_cons, 
+                        down_nona_cons, 
+                        up_hept_match_min,
+                        up_nona_match_min,
+                        down_hept_match_min,
+                        down_nona_match_min,
+                        total_match_min
+                     }
+        
+    def get_matches ( self ):
+        return self.matches
+    
+    def get_rules ( self ):
+        return self.rules
+
 # Search for d genes in given dgene_file based on given locus file
 def d_search( locus, dgene_file, last_v_nt=False, pseudogenes=False, overwrite=False ):    
     pseudogene_list = []
@@ -20,6 +131,7 @@ def d_search( locus, dgene_file, last_v_nt=False, pseudogenes=False, overwrite=F
     d_file, mode = prep_IO.prep_output( dgene_file, force=overwrite )
     dout = open( d_file, mode )
     dseq_dict, dtype_dict = prep_IO.prep_database( dgene_file )
+    dout.write(f"> {out_columns} |\n\n\n")
     
     if pseudogenes:
         pseudo_file, mode = prep_IO.prep_pseudo_file( dgene_file, force=overwrite )
@@ -39,68 +151,35 @@ def d_search( locus, dgene_file, last_v_nt=False, pseudogenes=False, overwrite=F
         aa_frame = ['','','']
         aa_frame[0] = str(nt_frame[0].seq.translate())
         aa_frame[1] = str(nt_frame[1].seq.translate())
-        aa_frame[2] = str(nt_frame[2].seq.translate())   
-        
-        #for dseq in re.finditer('cac[acgt]gtg[acgt]{10,32}cac[acgt]gtg', nts):
-        #w/ hept>=2, non>=4 16 true pos, 0 false pos
+        aa_frame[2] = str(nt_frame[2].seq.translate())
     
-        #for dseq in re.finditer('[acgt]ac[acgt]gtg[acgt]{10,32}cac[acgt]gtg', nts):
-        # w/ hept>=2, non>=4 22 true pos, 2 false pos
-    
-        for dseq in finditer('[acgt]ac[acgt]gtg[acgt]{10,37}cac[acgt]gtg', nts):
+        # Read fasta sequence
+        for dseq in finditer( ighd_motif, nts ):
             sta_nt = dseq.span()[0]
             end_nt = dseq.span()[1]
             gene = nts[sta_nt+7:end_nt-7]
-            spacer = nts[end_nt:end_nt+12]
-            gene_len = end_nt - sta_nt - 14
-            
-            # upstream heptamer consensus = cactgtg
             upstream_heptamer = nts[sta_nt:sta_nt+7]
-            upstream_heptamer_score = 0
-            if upstream_heptamer[0] == 'c': upstream_heptamer_score += 1
-            if upstream_heptamer[1] == 'a': upstream_heptamer_score += 1
-            if upstream_heptamer[2] == 'c': upstream_heptamer_score += 1
-            if upstream_heptamer[3] == 't': upstream_heptamer_score += 1
-    
-            # upstream nonamer consensus = tgtttttgt
+            upstream_spacer = nts[sta_nt-12:sta_nt]
             upstream_nonamer = nts[sta_nt-12-9:sta_nt-12]
-            upstream_nonamer_score = 0
-            if upstream_nonamer[0] == 't': upstream_nonamer_score += 1
-            if upstream_nonamer[1] == 'g': upstream_nonamer_score += 1
-            if upstream_nonamer[2] == 't': upstream_nonamer_score += 1
-            if upstream_nonamer[3] == 't': upstream_nonamer_score += 1
-            if upstream_nonamer[4] == 't': upstream_nonamer_score += 1
-            if upstream_nonamer[5] == 't': upstream_nonamer_score += 1
-            if upstream_nonamer[6] == 't': upstream_nonamer_score += 1
-            if upstream_nonamer[7] == 'g': upstream_nonamer_score += 1
-            if upstream_nonamer[8] == 'g': upstream_nonamer_score += 1 # RSS ERROR
-    
-            # downstream heptamer consensus = cacagtg
             downstream_heptamer = nts[end_nt-7:end_nt]
-            downstream_heptamer_score = 0
-            if downstream_heptamer[3] == 'a': downstream_heptamer_score += 1
-            if downstream_heptamer[4] == 'g': downstream_heptamer_score += 1
-            if downstream_heptamer[5] == 't': downstream_heptamer_score += 1
-            if downstream_heptamer[6] == 'g': downstream_heptamer_score += 1
-    
-            # downstream nonamer consensus = acaaaaacc
+            downstream_spacer = nts[end_nt:end_nt+12]
             downstream_nonamer = nts[end_nt+12:end_nt+12+9]
-            downstream_nonamer_score = 0
-            if downstream_nonamer[0] == 'a': downstream_nonamer_score += 1
-            if downstream_nonamer[1] == 'c': downstream_nonamer_score += 1
-            if downstream_nonamer[2] == 'a': downstream_nonamer_score += 1
-            if downstream_nonamer[3] == 'a': downstream_nonamer_score += 1
-            if downstream_nonamer[4] == 'a': downstream_nonamer_score += 1
-            if downstream_nonamer[5] == 'a': downstream_nonamer_score += 1
-            if downstream_nonamer[6] == 'a': downstream_nonamer_score += 1
-            if downstream_nonamer[7] == 'c': downstream_nonamer_score += 1
-            if downstream_nonamer[8] == 'c': downstream_nonamer_score += 1
+            gene_len = end_nt - sta_nt - 14
     
+            upstream_heptamer_match = sum(c1 == c2 for c1, c2 in zip(upstream_heptamer, ighd_upstream_heptamer_consensus))
+            upstream_nonamer_match = sum(c1 == c2 for c1, c2 in zip(upstream_nonamer, ighd_upstream_nonamer_consensus))
+            downstream_heptamer_match = sum(c1 == c2 for c1, c2 in zip(downstream_heptamer,ighd_downstream_heptamer_consensus))
+            downstream_nonamer_match = sum(c1 == c2 for c1, c2 in zip(downstream_nonamer, ighd_downstream_nonamer_consensus))
+    
+            upstream_total_match = upstream_heptamer_match + upstream_nonamer_match
+            downstream_total_match = downstream_heptamer_match + downstream_nonamer_match
+            total_match = upstream_total_match + downstream_total_match
     
             # Look for exact matches between discovered gene and known alleles
             # Allow for the possibility that multiple alleles have same sequence
             # Default assumption is that gene is not in database
     
+            notes = ''
             allele = 'Not in D ref db'
             for dallele, dseq in dseq_dict.items():
                 if gene == dseq:
@@ -108,20 +187,24 @@ def d_search( locus, dgene_file, last_v_nt=False, pseudogenes=False, overwrite=F
                         allele = dallele + ' ' + dtype_dict[dallele]
                     else:
                         allele = allele + ', ' + dallele + ' ' + dtype_dict[dallele]
-                
+    
             # Flag D genes that start before last V gene
             if last_v_nt and sta_nt < last_v_nt:
                 continue
-                allele += ' / located in V gene region'
     
-            if (upstream_heptamer_score >= 2 and upstream_nonamer_score >= 4 and 
-                upstream_heptamer_score >= 2 and upstream_nonamer_score >= 4):
-                
-                dout.write(f">{allele} {gene_len} nts: {sta_nt} - {end_nt}\n")
+            if upstream_heptamer_match >= ighd_min_upstream_heptamer_match              \
+                and upstream_nonamer_match >= ighd_min_upstream_nonamer_match       \
+                and downstream_heptamer_match >= ighd_min_downstream_heptamer_match \
+                and downstream_nonamer_match >= ighd_min_downstream_nonamer_match   \
+                and total_match >= ighd_min_total_match:
+            
+                dout.write(f"> {allele} | {gene_len} | {sta_nt} | {end_nt} | {upstream_heptamer} | {upstream_heptamer_match} | {upstream_nonamer} | {upstream_nonamer_match} | {upstream_spacer} | {upstream_total_match} | {downstream_heptamer} | {downstream_heptamer_match} | {downstream_nonamer} | {downstream_nonamer_match} | {downstream_spacer} | {downstream_total_match} | {total_match} | {notes} |\n")
                 dout.write(gene)
                 dout.write("\n\n")  
             else:
                 pseudogene_list.append(gene)
+    
+    dout.close()
     
     if pseudogenes:
         with open( pseudo_file, mode ) as pickle_file:
@@ -130,7 +213,3 @@ def d_search( locus, dgene_file, last_v_nt=False, pseudogenes=False, overwrite=F
     
     if last_v_nt:
         return last_v_nt
-    else:
-        print("last_v_nt =", last_v_nt)
-                
-    dout.close()
