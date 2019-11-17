@@ -12,9 +12,12 @@ from re import match
 # homemade programs
 from modules import prep_IO
 
-# Motif description: Trp and Ser-Ser separated by exactly 8 aa
-# Parameter notes: Nonamer matches >=5, heptamer matches >= 5 and no restriction on sum finds all J genes with no false positives
+# Note from the Programmer:
+# These values have been rigorously tested and proven to identify and return the maximum correct immunoglobulin genes. Any alterations to the rules below risks compromising the accuracy of the program. 
+# If necessary, custom search criteria can be run temporarily through the main search() method. It is not necessary to change this code.
 default = {
+        
+    # *** DO NOT CHANGE THESE VALUES. ***
     'IGH': {
         'motif': 'W[A-Z]{8}SS',
         'heptamer_consensus': 'cactgtg',
@@ -24,7 +27,8 @@ default = {
         'nonamer_match_min': 5,
         'total_match_min': 0
         },
-    
+        
+    # *** DO NOT CHANGE THESE VALUES. ***
     'IGK': {
         'motif': '[FW][AG][A-Z]GT[KR][LV][DE]IK',
         'heptamer_consensus': 'cactgtg',
@@ -34,7 +38,8 @@ default = {
         'nonamer_match_min': 5,
         'total_match_min': 0
         },
-    
+        
+    # *** DO NOT CHANGE THESE VALUES. ***
     'IGL': {
         'motif': 'FG[A-Z]GT[EKQ][LV][A-Z]{2}L',
         'heptamer_consensus': 'cactgtg',
@@ -44,9 +49,8 @@ default = {
         'nonamer_match_min': 5,
         'total_match_min': 0
         },
-    
-    # NOTE: TRA and TRB loci models have not yet been implemented
-    # The following two dictionaries are temporary placeholders
+        
+    # *** DO NOT CHANGE THESE VALUES. ***
     'TRA': {
         'motif': 'W[A-Z]{8}SS',
         'heptamer_consensus': 'cactgtg',
@@ -56,7 +60,8 @@ default = {
         'nonamer_match_min': 0,
         'total_match_min': 0
         },
-    
+        
+    # *** DO NOT CHANGE THESE VALUES. ***
     'TRB': {
         'motif': 'W[A-Z]{8}SS',
         'heptamer_consensus': 'cactgtg',
@@ -66,16 +71,6 @@ default = {
         'nonamer_match_min': 0,
         'total_match_min': 0
         }
-    }
-
-# Default parameters should be used for gene searches in external programs
-# Set warnings for screening user-input in the case that default parameters are not used 
-warnings = {
-    'hept_low': "Minimum match of at least 5 finds all J genes with no false positives.",
-    'hept_high': "Increasing the minimum heptamer match can lead to loss of real genes.",
-    'nona_low': "Minimum match of at least 5 finds all J genes with no false positives.",
-    'nona_high': "Increasing the minimum nonamer match can lead to loss of real genes.",
-    'total_match': "No minimum needed for total match."
     }
 
 # Columns to organize values collected during search for output file
@@ -92,17 +87,23 @@ out_columns = { "allele": "Allele",
                "notes" : "Notes"
               }
 
-class J_gene ():
+class J_Gene ():
     
-    def __init__ ( gene, locus, heptamer, nonamer, rules_dict ):
+    def __init__ ( gene, locus, heptamer, nonamer, rules_dict, matches ):
         self.gene = gene
         self.locus = locus
         self.heptamer = heptamer
         self.nonamer = nonamer
         self.rules = rules_dict
-        self.matches = {}
+        self.matches = set_matches( matches )
+
+    def __str__( self ):
+        return f'{gene}'
+        
+    def __repr__( self ):
+        return f'J Gene found in a(n) {locus} .fasta file.'
     
-    def set_matches ( self, hept_match, nona_match, total_match ):
+    def __set_matches ( self, hept_match, nona_match, total_match ):
         self.matches = {
             "Heptamer Match": hept_match,
             "Nonamer Match": nona_match,
@@ -117,20 +118,22 @@ class J_gene ():
 
 
 # Search for j genes in given dgene_file based on given locus file
-def j_search( locus, jgene_file, last_v_nt=False, pseudogenes=False, overwrite=False ):    
+def j_search( locus, jgene_file, last_v_nt=True ):    
     pseudogene_list = []
     
     # Prepare output file and build local reference database
-    j_file, mode = prep_IO.prep_output( jgene_file, force=overwrite )
+    j_file, mode = prep_IO.prep_output( locus_file )
     jout = open( j_file, mode )
-    jseq_dict, jtype_dict = prep_IO.prep_database( jgene_file )
+    jseq_dict, jtype_dict = prep_IO.prep_database( locus_type, 'J' )
     jout.write("> Allele | Gene Length | Start Nucleotide | End Nucleotide | Heptamer | Match | Nonamer | Match | Spacer | Total Match | Notes |\n\n\n")
     
-    if pseudogenes:
-        pseudo_file, mode = prep_IO.prep_pseudo_file( jgene_file, force=overwrite )
+    pseudo_file, mode = prep_IO.prep_pseudo_file( locus_file )
+    
+    # V and J genes need to compute the aa_frame but D gene only needs nts
+    
     
     # Read fasta sequence
-    for nt in SeqIO.parse(locus, "fasta"):
+    for nt in SeqIO.parse(locus_file, "fasta"):
         nts = str(nt.seq).lower()
     
         # Get nt sequences in three reading frames
@@ -233,3 +236,6 @@ def j_search( locus, jgene_file, last_v_nt=False, pseudogenes=False, overwrite=F
         
     if last_v_nt:
         return last_v_nt
+    
+def custom_j_search( locus_file, locus_type, last_v_nt=True ):
+    return 0

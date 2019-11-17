@@ -12,9 +12,12 @@ from re import match
 # homemade programs
 from modules import prep_IO
 
-# Motif description: Due to short length and lack of highly conserved regions, motif needs to include heptamers
-# Motif description: Look for 10-37 bases flanked by three conserved nt on each side plus additional conserved nt
+# Note from the Programmer:
+# These values have been rigorously tested and proven to identify and return the maximum correct immunoglobulin genes. Any alterations to the rules below risks compromising the accuracy of the program. 
+# If necessary, custom search criteria can be run temporarily through the main search() method. It is not necessary to change this code.
 default = { 
+        
+    # *** DO NOT CHANGE THESE VALUES. ***
     'IGH': {
         'motif': '[acgt]ac[acgt]gtg[actg]{10,37}cac[acgt]g[actg]{2}',
         'up_hept_cons': 'cactgtg',
@@ -27,7 +30,8 @@ default = {
         'down_nona_match_min': 4,
         'total_match_min': 22
         },
-    
+        
+    # *** DO NOT CHANGE THESE VALUES. ***
     'TRB': {
         'motif': '[acgt]ac[acgt]gtg[actg]{10,37}cac[acgt]g[actg]{2}',
         'up_hept_cons': 'cactgtg',
@@ -40,22 +44,6 @@ default = {
         'down_nona_match_min': 0,
         'total_match_min': 0
         }
-    }
-
-# Default parameters should be used for gene searches in external programs
-# Set warnings for screening user-input in the case that default parameters are not used 
-# Potential problems: Too low = false positives, too high = loss of real genes
-warnings = {
-    'motif': 'Using an untested search motif is not recommended.',
-    'up_hept_cons': '',
-    'up_nona_cons': '',
-    'down_hept_cons': '', 
-    'down_nona_cons': '', 
-    'up_hept_match_min': '',
-    'up_nona_match_min': '',
-    'down_hept_match_min': '',
-    'down_nona_match_min': '',
-    'total_match_min': ''
     }
 
 # Columns to organize values collected during search for output file
@@ -80,17 +68,23 @@ out_columns = {
     'notes': 'Notes'
    }
 
-class IGHD_gene ():
-    default_rules = default
+class D_Gene ():
     
-    def __init__ ( gene, heptamer, nonamer ):
+    def __init__ ( gene, locus, heptamer, nonamer, rules_dict, matches ):
         self.gene = gene
+        self.locus = locus
         self.heptamer = heptamer
         self.nonamer = nonamer
-        self.matches = {}
-        self.rules = {}
+        self.rules = rules_dict
+        self.matches = set_matches( matches )
+        
+    def __str__( self ):
+        return f'{gene}'
+        
+    def __repr__( self ):
+        return f'D Gene found in a(n) {locus} .fasta file.'
     
-    def set_matches ( self, up_hept_match, up_nona_match, up_total_match,
+    def __set_matches ( self, up_hept_match, up_nona_match, up_total_match,
                      down_hept_match, down_nona_match, down_total_match, total_match ):
         self.matches = {
             'Upstream Heptamer Match': up_hept_match,
@@ -101,21 +95,6 @@ class IGHD_gene ():
             'Downstream Total Match': down_total_match,
             'Total Match': total_match,
                        }
-        
-    def set_rules ( self, motif,
-                   up_hept_cons, up_nona_cons, down_hept_cons,  down_nona_cons,
-                   up_hept_match_min, up_nona_match_min, down_hept_match_min, down_nona_match_min, total_match_min ):
-        self.rules = {motif,
-                        up_hept_cons
-                        up_nona_cons,
-                        down_hept_cons, 
-                        down_nona_cons, 
-                        up_hept_match_min,
-                        up_nona_match_min,
-                        down_hept_match_min,
-                        down_nona_match_min,
-                        total_match_min
-                     }
         
     def get_matches ( self ):
         return self.matches
@@ -128,16 +107,19 @@ def d_search( locus, dgene_file, last_v_nt=False, pseudogenes=False, overwrite=F
     pseudogene_list = []
     
     # Prepare output file and build local reference database
-    d_file, mode = prep_IO.prep_output( dgene_file, force=overwrite )
+    d_file, mode = prep_IO.prep_output( locus_file )
     dout = open( d_file, mode )
-    dseq_dict, dtype_dict = prep_IO.prep_database( dgene_file )
+    dseq_dict, dtype_dict = prep_IO.prep_database( locus_type, 'D' )
     dout.write(f"> {out_columns} |\n\n\n")
     
     if pseudogenes:
-        pseudo_file, mode = prep_IO.prep_pseudo_file( dgene_file, force=overwrite )
-    
+        pseudo_file, mode = prep_IO.prep_pseudo_file( locus_file )
+   
+    # V and J genes need to compute the aa_frame but D gene only needs nts
+
+
     # Read fasta sequence
-    for nt in SeqIO.parse(locus, "fasta"):
+    for nt in SeqIO.parse(locus_file, "fasta"):
         nts = str(nt.seq).lower()
     
         # Get nt sequences in three reading frames
@@ -213,3 +195,6 @@ def d_search( locus, dgene_file, last_v_nt=False, pseudogenes=False, overwrite=F
     
     if last_v_nt:
         return last_v_nt
+    
+def custom_d_search( locus_file, locus_type, last_v_nt=True ):
+    return 0

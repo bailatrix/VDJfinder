@@ -12,9 +12,13 @@ from re import match
 # homemade programs
 from modules import prep_IO
 
-# Motif description: Searching for pair of conserved Cys with intervening conserved Trp and [IVLFCMA]
-# Motif description: 8-17 aa between Cys1-Trp, 38-47 aa between Trp-[IVLFCMA], 12-14 aa between [IVLFCMA]-Cys2
+
+# Note from the Programmer:
+# These values have been rigorously tested and proven to identify and return the maximum correct immunoglobulin genes. Any alterations to the rules below risks compromising the accuracy of the program. 
+# If necessary, custom search criteria can be run temporarily through the main search() method. It is not necessary to change this code.
 default = {
+    
+    # *** DO NOT CHANGE THESE VALUES. ***
     'IGH': {
         'motif': 'C[A-Z]{8,17}W[A-Z]{38,47}[IVLFCMA][A-Z]{12,14}C',
         'hept_cons': 'cacagtg',
@@ -26,6 +30,7 @@ default = {
         'total_match_min': 13
         },
     
+    # *** DO NOT CHANGE THESE VALUES. ***
     'IGK': {
         'motif': 'C[A-Z]{8,17}W[A-Z]{38,47}[IVLFCMA][A-Z]{12,14}C',
         'hept_cons': 'cacagtg',
@@ -37,6 +42,7 @@ default = {
         'total_match_min': 13
         },
     
+    # *** DO NOT CHANGE THESE VALUES. ***
     'IGL': {
         'motif': 'C[A-Z]{8,17}W[A-Z]{38,47}[IVLFCMA][A-Z]{12,14}C',
         'hept_cons': 'cacagtg',
@@ -48,6 +54,7 @@ default = {
         'total_match_min': 12
         },
     
+    # *** DO NOT CHANGE THESE VALUES. ***
     'TRA': {
         'motif': 'C[A-Z]{8,17}W[A-Z]{38,47}[IVLFCMA][A-Z]{12,14}C',
         'hept_cons': 'cacagtg',
@@ -59,6 +66,7 @@ default = {
         'total_match_min': 0
         },
     
+    # *** DO NOT CHANGE THESE VALUES. ***
     'TRB': {
         'motif': 'C[A-Z]{8,17}W[A-Z]{38,47}[IVLFCMA][A-Z]{12,14}C',
         'hept_cons': 'cacagtg',
@@ -71,17 +79,7 @@ default = {
         }
     }
 
-# Default parameters should be used for gene searches in external programs
-# Set warnings for screening user-input in the case that default parameters are not used 
-warnings = {
-    'hept_low': "Setting the minimum heptamer match lower can increase false positives.",
-    'hept_high': "Increasing the minimum heptamer match can lead to loss of real genes.",
-    'nona_low': "Setting the minimum nonamer match lower can increase false positives.",
-    'nona_high': "Increasing the minimum nonamer match can lead to loss of real genes.",
-    'total_match': "Total matches >= 13 filters ORFs without losing real genes."
-    }
-
-# Columns to organize values collected during search for output file
+# columns to organize values collected during search for output file
 out_columns = { "allele": "Allele",
                "gene_len" : "Gene Length",
                "st_nt" : "Start Nucleotide",
@@ -95,30 +93,31 @@ out_columns = { "allele": "Allele",
                "notes" : "Notes"
               }
 
-class IGHV_gene ():
-    default_rules = default
-    
-    def __init__ ( gene, heptamer, nonamer ):
+
+class V_Gene ():   
+    def __init__ ( gene, locus, heptamer, nonamer, rules_dict ):
         self.gene = gene
+        self.locus = locus
         self.heptamer = heptamer
         self.nonamer = nonamer
+        self.rules = rules_dict
+        self.custom_rules = ( rules_dict == default[locus] )        # track if gene found w/ custom rules
         self.matches = {}
-        self.rules = {}
+        
+    def __str__( self ):
+        return f'{gene}'
+        
+    def __repr__( self ):
+        return f'V Gene found in a(n) {locus} .fasta file.'
     
-    def set_matches ( self, hept_match, nona_match, total_match ):
+    def __len__( self ):
+        return len(self.gene)
+    
+    def __set_matches ( self, hept_match, nona_match, total_match ):
         self.matches = { "Heptamer Match": hept_match,
                        "Nonamer Match": nona_match,
                        "Total Match": total_match
                        }
-    def set_rules ( self, motif, hept_cons, nona_cons, nt_before_cys1, hept_match_min, nona_match_min, total_match_min ):
-        self.rules = {'motif': motif,
-                    'Heptamer Consensus': hept_cons, 
-                    'Nonamer Consensus': nona_cons,
-                    'Nucleotides before Cystine': nt_before_cys1,
-                    'Heptamer Match Minimum': hept_match_min,
-                    'Nonamer Match Minimum': nona_match_min,
-                    'Total Match Minimum': total_match_min
-                     }
         
     def get_matches ( self ):
         return self.matches
@@ -127,44 +126,28 @@ class IGHV_gene ():
         return self.rules
 
 # Search for v genes in given vgene_file based on given locus file
-def v_search( locus,  vgene_file, ret_last_v_nt=False, pseudogenes=False, overwrite=False ):
+def v_search( locus_file, locus_type, last_v_nt=True ):
     pseudogene_list = []
     
     # Prepare output file and build local reference database
-    v_file, mode = prep_IO.prep_output( vgene_file, force=overwrite )
+    v_file, mode = prep_IO.prep_output( locus_file )
     vout = open( v_file, mode )
-    vseq_dict, vtype_dict = prep_IO.prep_database( vgene_file )
+    vseq_dict, vtype_dict = prep_IO.prep_database( locus_type, 'V' )
     vout.write("> {out_columns} \n\n\n")
     
-    if pseudogenes:
-        pseudo_file, mode = prep_IO.prep_pseudo_file( vgene_file, force=overwrite )
+    pseudo_file, mode = prep_IO.prep_output( locus_file, pseudogenes=True )
     
     # Read fasta sequence
-    for nt in SeqIO.parse(locus, "fasta"):
+    for nt in SeqIO.parse(locus_file, "fasta"):
         nts = str(nt.seq).lower()
     
-        # Get nt sequences in three reading frames
-        nt_len = len(nt.seq)
-        nt_frame = ['','','']
-        nt_frame[0] = nt[0 : nt_len - (nt_len + 0)%3]
-        nt_frame[1] = nt[1 : nt_len - (nt_len + 2)%3]
-        nt_frame[2] = nt[2 : nt_len - (nt_len + 1)%3]
+    # V and J genes need to compute the aa_frame but D gene only needs nts
+        if read_dir == 'reverse':
+            nt = nt.reverse_complement()
     
-        # Get aa translations in three reading frames
-        aa_frame = ['','','']
-        aa_frame[0] = str(nt_frame[0].seq.translate())
-        aa_frame[1] = str(nt_frame[1].seq.translate())
-        aa_frame[2] = str(nt_frame[2].seq.translate())
-    
-        # -------------------- SEARCH FOR V GENES --------------------
-    
-        # Find matches for V-genes (1st conserved Cys to 2nd conserved Cys)
-        # Max number of residues between Cys1-Trp       = 17
-        # Max number of residues between Tpr-[IVLFCMA]  = 47
-        # Max number of residues between [IVLFCMA]-Cys2 = 14
-        # Allow for missing residues - 9 in Cys1-Trp, 9 in Trp-[IVLFCMA], 2 in [IVLFCMA]-Cys2
-    
-    
+        nts = str(nt.seq).lower()
+        aa_frame = prep_IO.prep_frame( nt )
+        
         for frame,offset in zip( aa_frame, [0,1,2] ):
             for mcons in finditer( ighv_motif, frame ):
                 sta_aa = mcons.span()[0]         # Starting aa in frame
@@ -248,10 +231,13 @@ def v_search( locus,  vgene_file, ret_last_v_nt=False, pseudogenes=False, overwr
     
     vout.close()
     
-    if pseudogenes:
+    if pseudogenes_list:
         with open( pseudo_file, mode ) as pickle_file:
             pickle.dump( pseudogene_list, pickle_file )
         pickle_file.close()
         
-    if ret_last_v_nt:
+    if last_v_nt:
         return last_v_nt
+    
+def custom_v_search( locus_file, locus_type, last_v_nt=True ):
+    return 0

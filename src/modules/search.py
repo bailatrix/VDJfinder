@@ -1,48 +1,83 @@
-def search_file( ):
-    
-    return 0
+from modules import v_gene
+from modules import d_gene
+from modules import j_gene
 
+############################
+# TODO:
+#    - implement support for searching multiple locus_files at a time?
+############################
+
+
+# search_db():
+#    - Custom search through db for pseudogenes
+# Parameters:
+#    - 
+# Return:
+#    - 
 def search_db( ):
     
     return 0
 
-def search( ):
+# This method is intended to be THE public search called by users
+# Notes: 
+#    - Search logic is specific to each locus+gene type pair
+#         - ie. given locus = 'IGH' and gene = 'V', search will follow prescribed 'IGHV' rules
+#    - D and J gene locations must be checked against the location of the last known V nucleotide, last_v_nt
+#        - If found before the location of last_v_nt, these genes are determined to be erroneous and misidentified
+# search():
+#    - Takes user call and initiates corresponding searches
+# Parameters:
+#    - locus_file: file to search
+#    - locus_type: 'IGH', 'IGL', 'IGK', 'TRA', or 'TRB'
+#    - gene: Defaults to 'ALL', otherwise can be 'V', 'D', or 'J'
+#    - custom_rules: Boolean value, defaults to False. If True, indicates user wants to search file with custom search values
+# Return:
+#    - No return value, but search programs called create respective '_found' files for genes
+def search( locus_file, locus_type, gene='ALL', custom_rules=False ):
+    from sys import exc_info
     
-    # Read fasta sequence (ntf = forward , ntr = reverse)
-    for nt in SeqIO.parse(locus_file, "fasta"):
+    try:
+        
+        locus_type = locus_type.upper()
+        gene = gene.upper()
+        
+        # Custom rules must be handled by separate search functions to handle IO properly
+        if custom_rules:
+            if (gene == 'ALL') and (locus_type in ['IGH', 'TRB']):
+                
+                last_v_nt = v_gene.custom_v_search( locus_file, locus_type )
+                d_gene.custom_d_search( locus_file, locus_type, last_v_nt )
+                j_gene.custom_j_search( locus_file, locus_type, last_v_nt )
+        
+            elif (gene == 'ALL') and (locus_type in ['IGK', 'IGL', 'TRA']):
+        
+                last_v_nt = v_gene.custom_v_search( locus_file, locus_type )
+                j_gene.custom_j_search( locus_file, locus_type, last_v_nt )        
+        
+        else:
+            # Given standard search rules
+            if (gene == 'ALL') and (locus_type in ['IGH', 'TRB']):
+                
+                last_v_nt = v_gene.v_search( locus_file, locus_type )
+                d_gene.d_search( locus_file, locus_type, last_v_nt )
+                j_gene.j_search( locus_file, locus_type, last_v_nt )
+                
+            elif (gene == 'ALL') and (locus_type in ['IGK', 'IGL', 'TRA']):
+                
+                last_v_nt = v_gene.v_search( locus_file, locus_type )
+                j_gene.j_search( locus_file, locus_type, last_v_nt )        
     
-        if read_dir == 'reverse':
-            nt = nt.reverse_complement()
+    # handle incorrect number of arguments passed
+    except TypeError:
+        print("Invalid input. search() takes at least 2 string inputs as arguments: locus_file and locus_type.")
+        raise TypeError
     
-        nt_len = len(nt.seq)
-        nts = str(nt.seq).lower()
+    # handle invalid arguments passed
+    except ValueError:
+        print("Invalid input. search() takes at least 2 string inputs as arguments: locus_file and locus_type.")
+        raise ValueError
     
-        # Get nt sequences in three reading frames
-        nt_frame = ['', '', '']
-        nt_frame[0] = nt[0 : nt_len - (nt_len + 0)%3]
-        nt_frame[1] = nt[1 : nt_len - (nt_len + 2)%3]
-        nt_frame[2] = nt[2 : nt_len - (nt_len + 1)%3]
-    
-        # Get aa translations in three reading frames
-        aa_frame = ['', '', '']
-        aa_frame[0] = str(nt_frame[0].seq.translate())
-        aa_frame[1] = str(nt_frame[1].seq.translate())
-        aa_frame[2] = str(nt_frame[2].seq.translate())
-    
-        if vgene_file:
-            last_v_nt = v_gene_search(vgene_out, aa_frame, last_v_nt, vseq_dict, v_motif, v_gap, 
-                                      v_heptamer_consensus, v_nonamer_consensus, v_nt_before_cys1, 
-                                      v_min_heptamer_match, v_min_nonamer_match, v_min_total_match)
-    
-        if dgene_file:
-            d_gene_search(dgene_out, nts, last_v_nt, dseq_dict, d_motif, 
-                          d_upstream_heptamer_consensus, d_upstream_nonamer_consensus, 
-                          d_downstream_heptamer_consensus, d_downstream_nonamer_consensus, 
-                          d_min_upstream_heptamer_match, d_min_upstream_nonamer_match, 
-                          d_min_downstream_heptamer_match, d_min_downstream_nonamer_match,
-                          d_min_total_match)
-    
-        if jgene_file:
-            j_gene_search(jgene_out, aa_frame, last_v_nt, jseq_dict,
-                          j_motif, j_gap, j_heptamer_consensus, j_nonamer_consensus, 
-                          j_min_heptamer_match, j_min_nonamer_match, j_min_total_match)
+    # handle unknown error
+    except:
+        print("Unexpected error:", exc_info()[0])
+        raise
