@@ -126,7 +126,7 @@ class V_Gene ():
         return self.rules
 
 # Search for v genes in given vgene_file based on given locus file
-def v_search( locus_file, locus_type, last_v_nt=True ):
+def v_search( locus_file, locus_type, last_v_nt=True, rev_dir=False ):
     pseudogene_list = []
     
     # Prepare output file and build local reference database
@@ -139,12 +139,10 @@ def v_search( locus_file, locus_type, last_v_nt=True ):
     
     # Read fasta sequence
     for nt in SeqIO.parse(locus_file, "fasta"):
-        nts = str(nt.seq).lower()
-    
-    # V and J genes need to compute the aa_frame but D gene only needs nts
-        if read_dir == 'reverse':
+        
+        if rev_dir:
             nt = nt.reverse_complement()
-    
+            
         nts = str(nt.seq).lower()
         aa_frame = prep_IO.prep_frame( nt )
         

@@ -103,7 +103,7 @@ class D_Gene ():
         return self.rules
 
 # Search for d genes in given dgene_file based on given locus file
-def d_search( locus, dgene_file, last_v_nt=False, pseudogenes=False, overwrite=False ):    
+def d_search( locus_file, locus_type, last_v_nt=True, rev_dir=False ):    
     pseudogene_list = []
     
     # Prepare output file and build local reference database
@@ -112,28 +112,16 @@ def d_search( locus, dgene_file, last_v_nt=False, pseudogenes=False, overwrite=F
     dseq_dict, dtype_dict = prep_IO.prep_database( locus_type, 'D' )
     dout.write(f"> {out_columns} |\n\n\n")
     
-    if pseudogenes:
-        pseudo_file, mode = prep_IO.prep_pseudo_file( locus_file )
-   
-    # V and J genes need to compute the aa_frame but D gene only needs nts
-
+    pseudo_file, mode = prep_IO.prep_output( locus_file, pseudogenes=True )
 
     # Read fasta sequence
     for nt in SeqIO.parse(locus_file, "fasta"):
+        
+        if rev_dir:
+            nt = nt.reverse_complement()
+            
         nts = str(nt.seq).lower()
-    
-        # Get nt sequences in three reading frames
-        nt_len = len(nt.seq)
-        nt_frame = ['','','']
-        nt_frame[0] = nt[0 : nt_len - (nt_len + 0)%3]
-        nt_frame[1] = nt[1 : nt_len - (nt_len + 2)%3]
-        nt_frame[2] = nt[2 : nt_len - (nt_len + 1)%3]
-    
-        # Get aa translations in three reading frames
-        aa_frame = ['','','']
-        aa_frame[0] = str(nt_frame[0].seq.translate())
-        aa_frame[1] = str(nt_frame[1].seq.translate())
-        aa_frame[2] = str(nt_frame[2].seq.translate())
+        aa_frame = prep_IO.prep_frame( nt )
     
         # Read fasta sequence
         for dseq in finditer( ighd_motif, nts ):

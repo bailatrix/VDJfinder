@@ -118,39 +118,25 @@ class J_Gene ():
 
 
 # Search for j genes in given dgene_file based on given locus file
-def j_search( locus, jgene_file, last_v_nt=True ):    
+def j_search( locus_file, locus_type, last_v_nt=True, rev_dir=False ):    
     pseudogene_list = []
     
     # Prepare output file and build local reference database
     j_file, mode = prep_IO.prep_output( locus_file )
     jout = open( j_file, mode )
     jseq_dict, jtype_dict = prep_IO.prep_database( locus_type, 'J' )
-    jout.write("> Allele | Gene Length | Start Nucleotide | End Nucleotide | Heptamer | Match | Nonamer | Match | Spacer | Total Match | Notes |\n\n\n")
+    jout.write(f"> {out_columns} |\n\n\n")
     
-    pseudo_file, mode = prep_IO.prep_pseudo_file( locus_file )
-    
-    # V and J genes need to compute the aa_frame but D gene only needs nts
-    
+    pseudo_file, mode = prep_IO.prep_output( locus_file, pseudogenes=True )
     
     # Read fasta sequence
     for nt in SeqIO.parse(locus_file, "fasta"):
+
+        if rev_dir:
+            nt = nt.reverse_complement()
+            
         nts = str(nt.seq).lower()
-    
-        # Get nt sequences in three reading frames
-        nt_len = len(nt.seq)
-        nt_frame = ['','','']
-        nt_frame[0] = nt[0 : nt_len - (nt_len + 0)%3]
-        nt_frame[1] = nt[1 : nt_len - (nt_len + 2)%3]
-        nt_frame[2] = nt[2 : nt_len - (nt_len + 1)%3]
-    
-        # Get aa translations in three reading frames
-        aa_frame = ['','','']
-        aa_frame[0] = str(nt_frame[0].seq.translate())
-        aa_frame[1] = str(nt_frame[1].seq.translate())
-        aa_frame[2] = str(nt_frame[2].seq.translate())
-    
-        # Search for W - 8 residues - SS
-        # Then search backwards to conserved flanking heptamer
+        aa_frame = prep_IO.prep_frame( nt )
     
         for frame,offset in zip(aa_frame,[0,1,2]):
             for mcons in finditer(ighj_motif, frame):
