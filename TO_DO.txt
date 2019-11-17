@@ -1,5 +1,0 @@
-TO DO:
-
-* Get back into functional shape
-* Add demo support
-* Add support for demo mode vs. real mode
