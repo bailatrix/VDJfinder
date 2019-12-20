@@ -1,6 +1,8 @@
 # VDJfinder
-
+========================
 A search tool for identifying V, D and J gene segments in Ig and TCR loci. Optionally, includes identification of pseudogenes.
+
+
 
 ### Example Usage
 -----------------
@@ -8,20 +10,18 @@ A search tool for identifying V, D and J gene segments in Ig and TCR loci. Optio
 #### Command Line
 Method: python search( locus_file, locus_type, gene='ALL', custom_rules=False )
 
-Example: python3 search( './data/input/IGH_locus.fasta', 'IGH')
+Example: `python3 search( './data/input/IGH_locus.fasta', 'IGH')`
 
 #### Jupyter Notebook
 Method: search( locus_file, locus_type, gene='ALL', custom_rules=False )
+Example: `python3 search( './data/input/IGH_locus.fasta', 'IGH')`
 
-Example: python3 search( './data/input/IGH_locus.fasta', 'IGH')
-
+#### Original method
+Example: `python3 vdjfinder.py -f Loci/IGH_locus.fasta -v IMGT_human/IMGT/IGHV.fasta -d IMGT_human/IMGT/IGHD.fasta -j IMGT_human/IMGT/IGHJ.fasta`
 
 #### Online
 There is a web application in development as of January 2020. Once live, we will update with sample instructions.
 
-
-
-Example: python3 vdjfinder.py -f Loci/IGH_locus.fasta -v IMGT_human/IMGT/IGHV.fasta -d IMGT_human/IMGT/IGHD.fasta -j IMGT_human/IMGT/IGHJ.fasta
 
 ### Program Details
 ---------------------
@@ -29,35 +29,39 @@ There is only one method intended to be public to the user, [search()](../src/mo
 
 #### Modules
 search
-⋅⋅* search( locus_file, locus_type, gene='ALL', custom_rules=False )
+*_Methods_
+    * search( locus_file, locus_type, gene='ALL', custom_rules=False )
 
 prepIO
-.._Global values_
-....* all_ref_dbs: 
+*_Global values_
+    * all_ref_dbs: 
 
-.._Methods_
-....* prep_output( gene_file, pseudogenes=False, pref_name=False, force=False ):  
-....* prep_database( locus_type, gene_type ):
-....* prep_frame( nt ):
+*_Methods_
+    * prep_output( gene_file, pseudogenes=False, pref_name=False, force=False ):  
+    * prep_database( locus_type, gene_type ):
+    * prep_frame( nt ):
 
-##### Data
+#### Data
+There is certain data which is vital for the search method's . We intend for this to be as up-to-date as possible
 
+=============================================
+
+### Contact
+If you encounter any problems while using this program, please [report the bug](https://github.com/bailatrix/VDJfinder/issues) to the developer! Additionally, [contact](https://www.eloquenceintech.com/contact) the developer with any questions, comments, or problems running this tool.
+
+![Updated](https://img.shields.io/github/last-commit/bailatrix/VDJfinder)
+![repo size](https://img.shields.io/github/repo-size/bailatrix/VDJfinder)
+[![issues](https://img.shields.io/github/issues/bailatrix/VDJfinder)](https://github.com/bailatrix/VDJfinder/issues)
+![forks](https://img.shields.io/github/forks/bailatrix/VDJfinder?style=social)
+![stars](https://img.shields.io/github/stars/bailatrix/VDJfinder?style=social)
 
 #### Authors
 This tool is a collaborative effort from researchers at the San Diego Supercomputer Center (SDSC) and Vanguard University.
 Bob Sinkovits, Ph.D. _Director of Scientific Computing Applications, SDSC_
 Bailey Passmore, Undergraduate Student, _Computational and Data Science Researcher, SDSC_
-Additional
+_Additional names to be added_
 
-### Contact
-If you encounter any problems while using this program, please [report the bug](https://github.com/bailatrix/VDJfinder/issues) to the developer! Contact us with any questions, comments, or problems running this tool.
-
-Updated: [![Updated](https://img.shields.io/github/last-commit/bailatrix/VDJfinder)]
-
-[![repo size](https://img.shields.io/github/repo-size/bailatrix/VDJfinder)]
-[![issues](https://img.shields.io/github/issues/bailatrix/VDJfinder)](https://github.com/bailatrix/VDJfinder/issues)
-[![forks](https://img.shields.io/github/forks/bailatrix/VDJfinder?style=social)]
-[![stars](https://img.shields.io/github/stars/bailatrix/VDJfinder?style=social)]
+------------
 
 Copyright [2019] [San Diego Supercomputer Center]
 
