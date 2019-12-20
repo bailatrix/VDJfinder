@@ -43,17 +43,17 @@ prepIO
     * `prep_frame( nt )`
 
 #### Data
-There is certain data which is vital for the search method's ability. We intend for this to be as up-to-date as possible
+There is certain data which is vital for the search method's ability to remain accurate and is based on public data found on [The National Center for Biotechnology Information](https://www.ncbi.nlm.nih.gov/gene?Db=gene&Cmd=DetailsSearch&Term=3492) website. While we use a local version of this data in the program, we intend for this to be kept as up-to-date as possible. Please report this issue if you find this to not be the case. 
 
 
 
 ### Contact
-> If you encounter any problems while using this program, please [report the bug](https://github.com/bailatrix/VDJfinder/issues) to the developer! Additionally, [contact](https://www.eloquenceintech.com/contact) the developer with any questions, comments, or problems running this tool.
+> If you encounter any problems while using this program, please [report the bug](https://github.com/bailatrix/VDJfinder/issues) to the developer. Additionally, [contact](https://www.eloquenceintech.com/contact) the developer with any questions, comments, or problems running this tool.
 
-_This tool is a collaborative effort from researchers at the San Diego Supercomputer Center (SDSC) and Vanguard University._ \
-    Bob Sinkovits, Ph.D. _Director of Scientific Computing Applications, SDSC_ \
-    Bailey Passmore, Undergraduate Student, _Computational and Data Science Researcher, SDSC_ \
-    _Additional names to be added_ 
+_This tool is a collaborative effort from researchers at the San Diego Supercomputer Center (SDSC) and Vanguard University._ 
+- Bob Sinkovits, Ph.D. _Director of Scientific Computing Applications, SDSC_ \
+- Bailey Passmore, Undergraduate Student, _Computational and Data Science Researcher, SDSC_ \
+- _Additional names to be added_ 
 
 ![Updated](https://img.shields.io/github/last-commit/bailatrix/VDJfinder)
 ![repo size](https://img.shields.io/github/repo-size/bailatrix/VDJfinder)
