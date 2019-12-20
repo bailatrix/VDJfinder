@@ -106,7 +106,7 @@ all_ref_dbs = {
 #    - gene_type
 #    - pref_name
 #    - custom_rules
-# implement support for outputing as .fasta file?
+# implement support for outputing as .fasta file
 
 ##############################################################
 

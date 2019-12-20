@@ -81,3 +81,6 @@ def search( locus_file, locus_type, gene='ALL', custom_rules=False ):
     except:
         print("Unexpected error:", exc_info()[0])
         raise
+        
+if __name__ == '__main__':
+    search(sys.argv)
