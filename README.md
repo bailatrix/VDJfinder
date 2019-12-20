@@ -1,11 +1,8 @@
 # VDJfinder
-========================
-A search tool for identifying V, D and J gene segments in Ig and TCR loci. Optionally, includes identification of pseudogenes.
+> A search tool for identifying V, D and J gene segments in Ig and TCR loci. Optionally, includes identification of pseudogenes.
 
-
-
+---
 ### Example Usage
------------------
 
 #### Command Line
 Method: python search( locus_file, locus_type, gene='ALL', custom_rules=False )
@@ -22,10 +19,9 @@ Example: `python3 vdjfinder.py -f Loci/IGH_locus.fasta -v IMGT_human/IMGT/IGHV.f
 #### Online
 There is a web application in development as of January 2020. Once live, we will update with sample instructions.
 
-
+---
 ### Program Details
----------------------
-There is only one method intended to be public to the user, [search()](../src/modules/search.py). The remainder of the program performs the search using a rigorously tested set of search criteria and prepares the result for the user. 
+> There is only one method intended to be public to the user, [search()](../src/modules/search.py). The remainder of the program performs the search using a rigorously tested set of search criteria and prepares the result for the user. 
 
 #### Modules
 search
@@ -44,26 +40,26 @@ prepIO
 #### Data
 There is certain data which is vital for the search method's . We intend for this to be as up-to-date as possible
 
-=============================================
-
+---
 ### Contact
-If you encounter any problems while using this program, please [report the bug](https://github.com/bailatrix/VDJfinder/issues) to the developer! Additionally, [contact](https://www.eloquenceintech.com/contact) the developer with any questions, comments, or problems running this tool.
+> If you encounter any problems while using this program, please [report the bug](https://github.com/bailatrix/VDJfinder/issues) to the developer! Additionally, [contact](https://www.eloquenceintech.com/contact) the developer with any questions, comments, or problems running this tool.
 
-![Updated](https://img.shields.io/github/last-commit/bailatrix/VDJfinder)
-![repo size](https://img.shields.io/github/repo-size/bailatrix/VDJfinder)
-[![issues](https://img.shields.io/github/issues/bailatrix/VDJfinder)](https://github.com/bailatrix/VDJfinder/issues)
-![forks](https://img.shields.io/github/forks/bailatrix/VDJfinder?style=social)
-![stars](https://img.shields.io/github/stars/bailatrix/VDJfinder?style=social)
 
 #### Authors
 This tool is a collaborative effort from researchers at the San Diego Supercomputer Center (SDSC) and Vanguard University.
-Bob Sinkovits, Ph.D. _Director of Scientific Computing Applications, SDSC_
-Bailey Passmore, Undergraduate Student, _Computational and Data Science Researcher, SDSC_
-_Additional names to be added_
+  Bob Sinkovits, Ph.D. _Director of Scientific Computing Applications, SDSC_
+  Bailey Passmore, Undergraduate Student, _Computational and Data Science Researcher, SDSC_
+  _Additional names to be added_
 
-------------
+<center>![Updated](https://img.shields.io/github/last-commit/bailatrix/VDJfinder)
+![repo size](https://img.shields.io/github/repo-size/bailatrix/VDJfinder)
+[![issues](https://img.shields.io/github/issues/bailatrix/VDJfinder)](https://github.com/bailatrix/VDJfinder/issues)
+![forks](https://img.shields.io/github/forks/bailatrix/VDJfinder?style=social)
+![stars](https://img.shields.io/github/stars/bailatrix/VDJfinder?style=social)</center>
 
-Copyright [2019] [San Diego Supercomputer Center]
+---
+
+Copyright 2019 San Diego Supercomputer Center
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
