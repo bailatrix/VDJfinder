@@ -25,10 +25,10 @@ There is a web application in development as of January 2020. Once live, we will
 
 
 
-## Program Details
+## *Program Details*
 > There is only one method intended to be public to the user, [search()](https://github.com/bailatrix/VDJfinder/blob/master/src/modules/search.py). The remainder of the program performs the search using a rigorously tested set of search criteria and prepares the result for the user. 
 
-#### Modules
+### Modules
 search
 * _Methods_
     * `search( locus_file, locus_type, gene='ALL', custom_rules=False )`
@@ -42,12 +42,12 @@ prepIO
     * `prep_database( locus_type, gene_type )`
     * `prep_frame( nt )`
 
-#### Data
+### Data
 There is certain data which is vital for the search method's ability to remain accurate and is based on public data found on [The National Center for Biotechnology Information](https://www.ncbi.nlm.nih.gov/gene?Db=gene&Cmd=DetailsSearch&Term=3492) website. While we use a local version of this data in the program, we intend for this to be kept as up-to-date as possible. Please report this issue if you find this to not be the case. 
 
 
 
-### Contact
+### *Contact*
 > If you encounter any problems while using this program, please [report the bug](https://github.com/bailatrix/VDJfinder/issues) to the developer. Additionally, [contact](https://www.eloquenceintech.com/contact) the developer with any questions, comments, or problems running this tool.
 
 This tool is a collaborative effort from researchers at the San Diego Supercomputer Center (SDSC) and Vanguard University.
