@@ -50,12 +50,12 @@ There is certain data which is vital for the search method's ability to remain a
 ### Contact
 > If you encounter any problems while using this program, please [report the bug](https://github.com/bailatrix/VDJfinder/issues) to the developer. Additionally, [contact](https://www.eloquenceintech.com/contact) the developer with any questions, comments, or problems running this tool.
 
-_This tool is a collaborative effort from researchers at the San Diego Supercomputer Center (SDSC) and Vanguard University._ 
-- Bob Sinkovits, Ph.D. _Director of Scientific Computing Applications, SDSC_ \
-- Bailey Passmore, Undergraduate Student, _Computational and Data Science Researcher, SDSC_ \
+This tool is a collaborative effort from researchers at the San Diego Supercomputer Center (SDSC) and Vanguard University.
+- Bob Sinkovits, Ph.D. _Director of Scientific Computing Applications, SDSC_
+- Bailey Passmore, Undergraduate Student, _Computational and Data Science Researcher, SDSC_
 - _Additional names to be added_ 
 
-![Updated](https://img.shields.io/github/last-commit/bailatrix/VDJfinder)
+    ![Updated](https://img.shields.io/github/last-commit/bailatrix/VDJfinder)
 ![repo size](https://img.shields.io/github/repo-size/bailatrix/VDJfinder)
 [![issues](https://img.shields.io/github/issues/bailatrix/VDJfinder)](https://github.com/bailatrix/VDJfinder/issues)
 ![forks](https://img.shields.io/github/forks/bailatrix/VDJfinder?style=social)
