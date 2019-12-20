@@ -52,12 +52,12 @@ Additional
 ### Contact
 If you encounter any problems while using this program, please [report the bug](https://github.com/bailatrix/VDJfinder/issues) to the developer! Contact us with any questions, comments, or problems running this tool.
 
-Updated: (/github/last-commit/bailatrix/VDJfinder) [https://img.shields.io/github/last-commit/bailatrix/VDJfinder]
+Updated: [![Updated](https://img.shields.io/github/last-commit/bailatrix/VDJfinder)]
 
-[![https://img.shields.io/github/repo-size/bailatrix/VDJfinder]]
-[![https://img.shields.io/github/issues/bailatrix/VDJfinder]](https://github.com/bailatrix/VDJfinder/issues)
-[![https://img.shields.io/github/forks/bailatrix/VDJfinder?style=social]]
-[![https://img.shields.io/github/stars/bailatrix/VDJfinder?style=social]]
+[![repo size](https://img.shields.io/github/repo-size/bailatrix/VDJfinder)]
+[![issues](https://img.shields.io/github/issues/bailatrix/VDJfinder)](https://github.com/bailatrix/VDJfinder/issues)
+[![forks](https://img.shields.io/github/forks/bailatrix/VDJfinder?style=social)]
+[![stars](https://img.shields.io/github/stars/bailatrix/VDJfinder?style=social)]
 
 Copyright [2019] [San Diego Supercomputer Center]
 
