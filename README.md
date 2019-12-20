@@ -26,11 +26,7 @@ There is a web application in development as of January 2020. Once live, we will
 
 
 ## Program Details
-<<<<<<< HEAD
 > There is only one method intended to be public to the user, [search()](https://github.com/bailatrix/VDJfinder/blob/master/src/modules/search.py). The remainder of the program performs the search using a rigorously tested set of search criteria and prepares the result for the user. 
-=======
-> There is only one method intended to be public to the user, [search()](../blob/master/src/modules/search.py). The remainder of the program performs the search using a rigorously tested set of search criteria and prepares the result for the user. 
->>>>>>> 42b5db9db45cdba37326de68fea28399a9a47227
 
 #### Modules
 search
