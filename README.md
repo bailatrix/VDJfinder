@@ -51,7 +51,7 @@ This tool is a collaborative effort from researchers at the San Diego Supercompu
 Bob Sinkovits, SDSC
 
 ### Contact
-Please contact us with any questions, comments, or problems running this tool. [Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](https://www.eloquenceintech.com/contact)
+Please contact us with any questions, comments, or problems running this tool. [![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](https://www.eloquenceintech.com/contact)
 
 Updated: (/github/last-commit/bailatrix/VDJfinder) [https://img.shields.io/github/last-commit/bailatrix/VDJfinder]
 
