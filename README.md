@@ -7,18 +7,18 @@
 _This program has been developed for use in several platforms including command line execution, Jupyter Notebook, and our website. Below are examples of what running the search tool should look like on these platforms._
 
 #### Command Line
-Method: python search( locus_file, locus_type, gene='ALL', custom_rules=False ) \
+    Method: python search( locus_file, locus_type, gene='ALL', custom_rules=False )
 
-Example: `python3 search( './data/input/IGH_locus.fasta', 'IGH')`
+    Example: `python3 search( './data/input/IGH_locus.fasta', 'IGH')`
 
 #### Jupyter Notebook
-Method: search( locus_file, locus_type, gene='ALL', custom_rules=False ) \
+    Method: search( locus_file, locus_type, gene='ALL', custom_rules=False )
 
-Example: `python3 search( './data/input/IGH_locus.fasta', 'IGH')`
+    Example: `python3 search( './data/input/IGH_locus.fasta', 'IGH')`
 
 #### Original method
-Example: \
-`python3 vdjfinder.py -f Loci/IGH_locus.fasta -v IMGT_human/IMGT/IGHV.fasta -d IMGT_human/IMGT/IGHD.fasta -j IMGT_human/IMGT/IGHJ.fasta`
+    Example: \
+    `python3 vdjfinder.py -f Loci/IGH_locus.fasta -v IMGT_human/IMGT/IGHV.fasta -d IMGT_human/IMGT/IGHD.fasta -j IMGT_human/IMGT/IGHJ.fasta`
 
 #### Online
 There is a web application in development as of January 2020. Once live, we will update with sample instructions.
@@ -26,7 +26,7 @@ There is a web application in development as of January 2020. Once live, we will
 
 
 ## Program Details
-> There is only one method intended to be public to the user, [search()](../src/modules/search.py). The remainder of the program performs the search using a rigorously tested set of search criteria and prepares the result for the user. 
+> There is only one method intended to be public to the user, [search()](../blob/master/src/modules/search.py). The remainder of the program performs the search using a rigorously tested set of search criteria and prepares the result for the user. 
 
 #### Modules
 search
