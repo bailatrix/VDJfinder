@@ -3,25 +3,25 @@
 
 
 
-> ## Example Usage
-> This program has been developed for use in several platforms including command line execution, Jupyter Notebook, and our website. Below are examples of what running the search tool should look like on these platforms.
-> 
-> #### Command Line
-> Method: python search( locus_file, locus_type, gene='ALL', custom_rules=False ) \
-> 
-> Example: `python3 search( './data/input/IGH_locus.fasta', 'IGH')`
-> 
-> #### Jupyter Notebook
-> Method: search( locus_file, locus_type, gene='ALL', custom_rules=False ) \
-> 
-> Example: `python3 search( './data/input/IGH_locus.fasta', 'IGH')`
-> 
-> #### Original method
-> Example: \
-> `python3 vdjfinder.py -f Loci/IGH_locus.fasta -v IMGT_human/IMGT/IGHV.fasta -d IMGT_human/IMGT/IGHD.fasta -j IMGT_human/IMGT/IGHJ.fasta`
-> 
-> #### Online
-> There is a web application in development as of January 2020. Once live, we will update with sample instructions.
+## Example Usage
+_This program has been developed for use in several platforms including command line execution, Jupyter Notebook, and our website. Below are examples of what running the search tool should look like on these platforms._
+
+#### Command Line
+Method: python search( locus_file, locus_type, gene='ALL', custom_rules=False ) \
+
+Example: `python3 search( './data/input/IGH_locus.fasta', 'IGH')`
+
+#### Jupyter Notebook
+Method: search( locus_file, locus_type, gene='ALL', custom_rules=False ) \
+
+Example: `python3 search( './data/input/IGH_locus.fasta', 'IGH')`
+
+#### Original method
+Example: \
+`python3 vdjfinder.py -f Loci/IGH_locus.fasta -v IMGT_human/IMGT/IGHV.fasta -d IMGT_human/IMGT/IGHD.fasta -j IMGT_human/IMGT/IGHJ.fasta`
+
+#### Online
+There is a web application in development as of January 2020. Once live, we will update with sample instructions.
 
 
 
