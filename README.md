@@ -55,7 +55,7 @@ This tool is a collaborative effort from researchers at the San Diego Supercompu
 - Bailey Passmore, Undergraduate Student, _Computational and Data Science Researcher, SDSC_
 - _Additional names to be added_ 
 
-                    ![Updated](https://img.shields.io/github/last-commit/bailatrix/VDJfinder)
+![Updated](https://img.shields.io/github/last-commit/bailatrix/VDJfinder)
 ![repo size](https://img.shields.io/github/repo-size/bailatrix/VDJfinder)
 [![issues](https://img.shields.io/github/issues/bailatrix/VDJfinder)](https://github.com/bailatrix/VDJfinder/issues)
 ![forks](https://img.shields.io/github/forks/bailatrix/VDJfinder?style=social)
