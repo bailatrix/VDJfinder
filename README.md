@@ -3,25 +3,25 @@
 
 
 
-## Example Usage
+> ## Example Usage
 > This program has been developed for use in several platforms including command line execution, Jupyter Notebook, and our website. Below are examples of what running the search tool should look like on these platforms.
-
-#### Command Line
-Method: python search( locus_file, locus_type, gene='ALL', custom_rules=False ) \
-
-Example: `python3 search( './data/input/IGH_locus.fasta', 'IGH')`
-
-#### Jupyter Notebook
-Method: search( locus_file, locus_type, gene='ALL', custom_rules=False ) \
-
-Example: `python3 search( './data/input/IGH_locus.fasta', 'IGH')`
-
-#### Original method
-Example: \
-`python3 vdjfinder.py -f Loci/IGH_locus.fasta -v IMGT_human/IMGT/IGHV.fasta -d IMGT_human/IMGT/IGHD.fasta -j IMGT_human/IMGT/IGHJ.fasta`
-
-#### Online
-There is a web application in development as of January 2020. Once live, we will update with sample instructions.
+> 
+> #### Command Line
+> Method: python search( locus_file, locus_type, gene='ALL', custom_rules=False ) \
+> 
+> Example: `python3 search( './data/input/IGH_locus.fasta', 'IGH')`
+> 
+> #### Jupyter Notebook
+> Method: search( locus_file, locus_type, gene='ALL', custom_rules=False ) \
+> 
+> Example: `python3 search( './data/input/IGH_locus.fasta', 'IGH')`
+> 
+> #### Original method
+> Example: \
+> `python3 vdjfinder.py -f Loci/IGH_locus.fasta -v IMGT_human/IMGT/IGHV.fasta -d IMGT_human/IMGT/IGHD.fasta -j IMGT_human/IMGT/IGHJ.fasta`
+> 
+> #### Online
+> There is a web application in development as of January 2020. Once live, we will update with sample instructions.
 
 
 
@@ -29,18 +29,18 @@ There is a web application in development as of January 2020. Once live, we will
 > There is only one method intended to be public to the user, [search()](../src/modules/search.py). The remainder of the program performs the search using a rigorously tested set of search criteria and prepares the result for the user. 
 
 #### Modules
-search \
-* _Methods_ \
-    * search( locus_file, locus_type, gene='ALL', custom_rules=False ) 
+search
+* _Methods_
+    * `search( locus_file, locus_type, gene='ALL', custom_rules=False )`
 
-prepIO \
-* _Global values_ \
-    * all_ref_dbs: 
+prepIO
+* _Global values_
+    * `all_ref_dbs`
 
-* _Methods_ \
-    * prep_output( gene_file, pseudogenes=False, pref_name=False, force=False ): \
-    * prep_database( locus_type, gene_type ): \
-    * prep_frame( nt ): 
+* _Methods_
+    * `prep_output( gene_file, pseudogenes=False, pref_name=False, force=False )`
+    * `prep_database( locus_type, gene_type )`
+    * `prep_frame( nt )`
 
 #### Data
 There is certain data which is vital for the search method's ability. We intend for this to be as up-to-date as possible
