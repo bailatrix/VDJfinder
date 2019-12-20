@@ -46,16 +46,16 @@ There is certain data which is vital for the search method's . We intend for thi
 
 
 #### Authors
-This tool is a collaborative effort from researchers at the San Diego Supercomputer Center (SDSC) and Vanguard University.
-  Bob Sinkovits, Ph.D. _Director of Scientific Computing Applications, SDSC_
-  Bailey Passmore, Undergraduate Student, _Computational and Data Science Researcher, SDSC_
-  _Additional names to be added_
+This tool is a collaborative effort from researchers at the San Diego Supercomputer Center (SDSC) and Vanguard University. \
+Bob Sinkovits, Ph.D. _Director of Scientific Computing Applications, SDSC_ \
+Bailey Passmore, Undergraduate Student, _Computational and Data Science Researcher, SDSC_ \
+_Additional names to be added_ \
 
-<center>![Updated](https://img.shields.io/github/last-commit/bailatrix/VDJfinder)
+![Updated](https://img.shields.io/github/last-commit/bailatrix/VDJfinder)
 ![repo size](https://img.shields.io/github/repo-size/bailatrix/VDJfinder)
 [![issues](https://img.shields.io/github/issues/bailatrix/VDJfinder)](https://github.com/bailatrix/VDJfinder/issues)
 ![forks](https://img.shields.io/github/forks/bailatrix/VDJfinder?style=social)
-![stars](https://img.shields.io/github/stars/bailatrix/VDJfinder?style=social)</center>
+![stars](https://img.shields.io/github/stars/bailatrix/VDJfinder?style=social)
 
 ---
 
