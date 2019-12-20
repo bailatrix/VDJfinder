@@ -51,11 +51,14 @@ This tool is a collaborative effort from researchers at the San Diego Supercompu
 Bob Sinkovits, SDSC
 
 ### Contact
-Please contact us with any questions, comments, or problems running this tool. 
+Please contact us with any questions, comments, or problems running this tool. [Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](https://www.eloquenceintech.com/contact)
 
-Updated: /github/last-commit/bailatrix/VDJfinder https://img.shields.io/github/last-commit/bailatrix/VDJfinder
+Updated: (/github/last-commit/bailatrix/VDJfinder) [https://img.shields.io/github/last-commit/bailatrix/VDJfinder]
 
-https://img.shields.io/github/repo-size/bailatrix/VDJfinder https://img.shields.io/github/issues/bailatrix/VDJfinder https://img.shields.io/github/forks/bailatrix/VDJfinder?style=social https://img.shields.io/github/stars/bailatrix/VDJfinder?style=social
+[https://img.shields.io/github/repo-size/bailatrix/VDJfinder]()
+[https://img.shields.io/github/issues/bailatrix/VDJfinder](https://github.com/bailatrix/VDJfinder/issues)
+[https://img.shields.io/github/forks/bailatrix/VDJfinder?style=social]
+[https://img.shields.io/github/stars/bailatrix/VDJfinder?style=social]
 
 Copyright [2019] [San Diego Supercomputer Center]
 
