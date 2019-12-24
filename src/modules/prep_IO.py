@@ -9,7 +9,7 @@ from os.path import getsize
 from Bio.SeqIO import parse
 
 # Locations of all reference database files
-# These values should be hard-coded into the program to protect accuracy of search functions
+# These values should be hard-coded into the program as the location of each file is vital to the search function
 all_ref_dbs = {
     'IGH': {
         'V': '/home/baileyp/projects/VDJfinder/src/data/master/IMGT/IGHV.fasta',
@@ -41,72 +41,60 @@ all_ref_dbs = {
 
 ##############################################################
 
-# Find matches for V-genes (1st conserved Cys to 2nd conserved Cys)
-        # Max number of residues between Cys1-Trp          = 17
-        # Max number of residues between Tpr-[IVLFCMA]     = 47
-        # Max number of residues between [IVLFCMA]-Cys2    = 14
-        # Max number of missing residues in Cys1-Trp       = 9
-        # Max number of missing residues in Trp-[IVLFCMA]  = 9
-        # Max number of missing residues in [IVLFCMA]-Cys2 = 2
-        
 # default parameters should be used for gene searches in external programs
-# warnings for screening user-input in the case that default parameters are not used 
-#warnings = {
-#    'hept_low': "Setting the minimum heptamer match lower can increase false positives.",
-#    'hept_high': "Increasing the minimum heptamer match can lead to loss of real genes.",
-#    'nona_low': "Setting the minimum nonamer match lower can increase false positives.",
-#    'nona_high': "Increasing the minimum nonamer match can lead to loss of real genes.",
-#    'total_match': "Total matches >= 13 filters ORFs without losing real genes."
-#    }
-
-# Motif description: Due to short length and lack of highly conserved regions, motif needs to include heptamers
-# Motif description: Look for 10-37 bases flanked by three conserved nt on each side plus additional conserved nt
-# Default parameters should be used for gene searches in external programs
-# Set warnings for screening user-input in the case that default parameters are not used 
-# Potential problems: Too low = false positives, too high = loss of real genes
-#warnings = {
-#    'motif': 'Using an untested search motif is not recommended.',
-#    'up_hept_cons': '',
-#    'up_nona_cons': '',
-#    'down_hept_cons': '', 
-#    'down_nona_cons': '', 
-#    'up_hept_match_min': '',
-#    'up_nona_match_min': '',
-#    'down_hept_match_min': '',
-#    'down_nona_match_min': '',
-#    'total_match_min': ''
-#    }
-
-# Motif description: Trp and Ser-Ser separated by exactly 8 aa
-# Parameter notes: Nonamer matches >=5, heptamer matches >= 5 and no restriction on sum finds all J genes with no false positives
-# Default parameters should be used for gene searches in external programs
-# Set warnings for screening user-input in the case that default parameters are not used 
-#warnings = {
-#    'hept_low': "Minimum match of at least 5 finds all J genes with no false positives.",
-#    'hept_high': "Increasing the minimum heptamer match can lead to loss of real genes.",
-#    'nona_low': "Minimum match of at least 5 finds all J genes with no false positives.",
-#    'nona_high': "Increasing the minimum nonamer match can lead to loss of real genes.",
-#    'total_match': "No minimum needed for total match."
-#    }
+# warnings for screening user-input in the case that default parameters are not used
+warnings = {
+    
+    # V-genes: 1st conserved Cys to 2nd conserved Cys
+    #     Max number of residues between Cys1-Trp          = 17
+    #     Max number of residues between Tpr-[IVLFCMA]     = 47
+    #     Max number of residues between [IVLFCMA]-Cys2    = 14
+    #     Max number of missing residues in Cys1-Trp       = 9
+    #     Max number of missing residues in Trp-[IVLFCMA]  = 9
+    #     Max number of missing residues in [IVLFCMA]-Cys2 = 2
+    'V': {
+        'hept_low': "Setting the minimum heptamer match lower can increase false positives.",
+        'hept_high': "Increasing the minimum heptamer match can lead to loss of real genes.",
+        'nona_low': "Setting the minimum nonamer match lower can increase false positives.",
+        'nona_high': "Increasing the minimum nonamer match can lead to loss of real genes.",
+        'total_match': "Total matches >= 13 filters ORFs without losing real genes."
+        },
+    
+    # Motif description: Due to short length and lack of highly conserved regions, motif needs to include heptamers
+    # Motif description: Look for 10-37 bases flanked by three conserved nt on each side plus additional conserved nt
+    'D': {
+        'motif': 'Using an untested search motif is not recommended.',
+        'up_hept_cons': '',
+        'up_nona_cons': '',
+        'down_hept_cons': '', 
+        'down_nona_cons': '', 
+        'up_hept_match_min': '',
+        'up_nona_match_min': '',
+        'down_hept_match_min': '',
+        'down_nona_match_min': '',
+        'total_match_min': ''
+        },
+    
+    # Motif description: Trp and Ser-Ser separated by exactly 8 aa
+    # Nonamer matches >=5, heptamer matches >= 5, and no restriction on sum finds all J genes with no false positives
+    'J': {
+        'hept_low': "Minimum match of at least 5 finds all J genes with no false positives.",
+        'hept_high': "Increasing the minimum heptamer match can lead to loss of real genes.",
+        'nona_low': "Minimum match of at least 5 finds all J genes with no false positives.",
+        'nona_high': "Increasing the minimum nonamer match can lead to loss of real genes.",
+        'total_match': "No minimum needed for total match."
+        }
+    } 
 
 # Note: D genes are not found in all loci
 # Default booleans for d genes by locus type
-#loci = {
-#    'IGH': True,
-#    'IGL': False,
-#    'IGK': False,
-#    'TRA': False,
-#    'TRB': True
-#    }
-
-# TODO:
-# implement screening methods for necessary search parameters:
-#    - locus_file
-#    - locus_type
-#    - gene_type
-#    - pref_name
-#    - custom_rules
-# implement support for outputing as .fasta file
+loci = {
+    'IGH': True,
+    'IGL': False,
+    'IGK': False,
+    'TRA': False,
+    'TRB': True
+    }
 
 ##############################################################
 
@@ -214,7 +202,7 @@ def prep_database( locus_type, gene_type ):
         
 # Private to v_gene_search() method
 # prep_frame():
-#    - 
+#    - TBA
 # Parameter:
 #    - nt: nucleotide sequence to operate on
 # Return:
