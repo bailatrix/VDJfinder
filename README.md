@@ -2,14 +2,14 @@
 > A search tool for identifying V, D, and J gene segments in Ig and TCR loci. Optionally, supports identification of pseudogenes and scan of NCBI database.
 
 
-#### TODO:
-#### implement screening methods for necessary search parameters:
-####    - locus_file
-####    - locus_type
-####    - gene_type
-####    - pref_name
-####    - custom_rules
-#### implement support for outputing as .fasta file
+__TODO:__
+- implement screening methods for necessary search parameters:
+    - locus_file
+    - locus_type
+    - gene_type
+    - pref_name
+    - custom_rules
+- implement support for outputing as .fasta file
 
 
 ## Example Usage
