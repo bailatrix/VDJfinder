@@ -53,14 +53,14 @@ prepIO
      * Private to v/d/j_gene_search() methods
      * preps output file to store search results
      * __Parameter(s)__: \
-           * `gene_file`: file that is being searched, naming convention uses this file name as base \
-           * `pseudogenes`: Boolean value, indicates whether to alter naming convention to include 'pseudogenes' \
-           * `pref_name`: allows out_name to be passed as argument \
-           * `force`: Boolean value, indicates whether to force overwrite in the event of duplicate file name
+           `gene_file`: file that is being searched, naming convention uses this file name as base \
+           `pseudogenes`: Boolean value, indicates whether to alter naming convention to include 'pseudogenes' \
+           `pref_name`: allows out_name to be passed as argument \
+           `force`: Boolean value, indicates whether to force overwrite in the event of duplicate file name
      * __Return__:  \
-           * file location+name and mode to use
+           file location+name and mode to use
        
-`prep_database( locus_type, gene_type )`
+`prep_database( locus_type, gene_type )` \
      * Private to v/d/j_gene_search() methods \
      * prepares local reference database as dictionaries \
      * __Parameter(s)__: \
