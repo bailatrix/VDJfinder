@@ -39,17 +39,17 @@ There is a web application in development as of January 2020. Once live, we will
 
 
 ### Modules
-search
-* __Methods__
+#### search
+ __Methods__
     * `search( locus_file, locus_type, gene='ALL', custom_rules=False )`
 
-prepIO
-* __Global values__
+#### prepIO
+__Global values__
     * `all_ref_dbs`
     * NOTE: Nonamer matches >=5, heptamer matches >= 5, and no restriction on sum finds all J genes with no false positives
 
-* __Methods__ \
-`prep_output( gene_file, pseudogenes=False, pref_name=False, force=False )` \
+__Methods__ \
+* `prep_output( gene_file, pseudogenes=False, pref_name=False, force=False )` \
     * Private to v/d/j_gene_search() methods
     * preps output file to store search results
     * __Parameter(s)__: \
@@ -58,22 +58,22 @@ prepIO
         `pref_name`: allows out_name to be passed as argument \
         `force`: Boolean value, indicates whether to force overwrite in the event of duplicate file name
     * __Return__:  \
-        file location+name and mode to use \
+        file location+name and mode to use
        
-`prep_database( locus_type, gene_type )` \
+* `prep_database( locus_type, gene_type )` \
     * Private to v/d/j_gene_search() methods \
     * prepares local reference database as dictionaries \
     * __Parameter(s)__: \
-        * `locus_type`: 'IGH', 'IGL', 'IGK', 'TRA', or 'TRB' \
-        * `gene_type`: 'V', 'D', or 'J' \
+        `locus_type`: 'IGH', 'IGL', 'IGK', 'TRA', or 'TRB' \
+        `gene_type`: 'V', 'D', or 'J' \
     * __Return__: \
-        * dict of gene sequences and dict of gene types \
+        * dict of gene sequences and dict of gene types
     
-`prep_frame( nt )` \
+* `prep_frame( nt )` \
     * Private to v_gene_search() method \
     * Description TBD  \
     * __Parameter(s)__: \
-        * `nt`: nucleotide sequence to operate on \
+        `nt`: nucleotide sequence to operate on \
     * __Return__: \
         * amino acid frame
 
