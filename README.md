@@ -52,29 +52,29 @@ prepIO
 `prep_output( gene_file, pseudogenes=False, pref_name=False, force=False )`
      * Private to v/d/j_gene_search() methods
      * preps output file to store search results
-     * __Parameter(s)__:
-           * `gene_file`: file that is being searched, naming convention uses this file name as base
-           * `pseudogenes`: Boolean value, indicates whether to alter naming convention to include 'pseudogenes'
-           * `pref_name`: allows out_name to be passed as argument
+     * __Parameter(s)__: \
+           * `gene_file`: file that is being searched, naming convention uses this file name as base \
+           * `pseudogenes`: Boolean value, indicates whether to alter naming convention to include 'pseudogenes' \
+           * `pref_name`: allows out_name to be passed as argument \
            * `force`: Boolean value, indicates whether to force overwrite in the event of duplicate file name
-     * __Return__: 
+     * __Return__:  \
            * file location+name and mode to use
        
 `prep_database( locus_type, gene_type )`
-     * Private to v/d/j_gene_search() methods
-     * prepares local reference database as dictionaries
-     * __Parameter(s)__:
-           * `locus_type`: 'IGH', 'IGL', 'IGK', 'TRA', or 'TRB'
-           * `gene_type`: 'V', 'D', or 'J'
-     * __Return__:
+     * Private to v/d/j_gene_search() methods \
+     * prepares local reference database as dictionaries \
+     * __Parameter(s)__: \
+           * `locus_type`: 'IGH', 'IGL', 'IGK', 'TRA', or 'TRB' \
+           * `gene_type`: 'V', 'D', or 'J' \
+     * __Return__: \
            * dict of gene sequences and dict of gene types
     
-`prep_frame( nt )`
-     * Private to v_gene_search() method
-     * Description TBD 
-     * __Parameter(s)__:
-           * `nt`: nucleotide sequence to operate on
-     * __Return__:
+`prep_frame( nt )` \
+     * Private to v_gene_search() method \
+     * Description TBD  \
+     * __Parameter(s)__: \
+           * `nt`: nucleotide sequence to operate on \
+     * __Return__: \
            * amino acid frame
 
 ### Data
