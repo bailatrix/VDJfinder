@@ -80,18 +80,7 @@ default = {
     }
 
 # columns to organize values collected during search for output file
-out_columns = { "allele": "Allele",
-               "gene_len" : "Gene Length",
-               "st_nt" : "Start Nucleotide",
-               "end_nt" : "End Nucleotide",
-               "hept" : "Heptamer",
-               "hept_match" : "Heptamer Match",
-               "non" : "Nonamer",
-               "non_match" : "Nonamer Match",
-               "spacer" : "Spacer",
-               "total_match" : "Total Match",
-               "notes" : "Notes"
-              }
+out_columns = "Allele | Gene Length | Start Nucleotide | End Nucleotide | Heptamer | Heptamer Match | Nonamer | Nonamer Match | Spacer | Total Match | Notes |"
 
 
 class V_Gene ():   
@@ -126,19 +115,21 @@ class V_Gene ():
         return self.rules
 
 # Search for v genes in given vgene_file based on given locus file
-def v_search( locus_file, locus_type, last_v_nt=True, rev_dir=False ):
-    pseudogene_list = []
+def v_search( locus_file, locus_type, pseudogenes, file_name, force, rev_dir=False ):
+    pseudogenes_list = []
+    rules = default[locus_type]
     
-    # Prepare output file and build local reference database
-    v_file, mode = prep_IO.prep_output( locus_file )
-    vout = open( v_file, mode )
+    # Prepare output file(s) 
+    v_file, v_mode = prep_IO.prep_output( locus_file, locus_type, 'V', file_name, force )
+    pseudo_file, mode = prep_IO.prep_output_pseudo( locus_file, locus_type, 'V', file_name, force )
+    
+    # Start output file and build local reference database
+    vout = open( v_file, v_mode )
     vseq_dict, vtype_dict = prep_IO.prep_database( locus_type, 'V' )
-    vout.write("> {out_columns} \n\n\n")
-    
-    pseudo_file, mode = prep_IO.prep_output( locus_file, pseudogenes=True )
+    vout.write( f'> {out_columns} \n\n' )
     
     # Read fasta sequence
-    for nt in SeqIO.parse(locus_file, "fasta"):
+    for nt in SeqIO.parse( locus_file, "fasta" ):
         
         if rev_dir:
             nt = nt.reverse_complement()
@@ -146,8 +137,9 @@ def v_search( locus_file, locus_type, last_v_nt=True, rev_dir=False ):
         nts = str(nt.seq).lower()
         aa_frame = prep_IO.prep_frame( nt )
         
+        # Break down fasta sequence
         for frame,offset in zip( aa_frame, [0,1,2] ):
-            for mcons in finditer( ighv_motif, frame ):
+            for mcons in finditer( rules['motif'], frame ):
                 sta_aa = mcons.span()[0]         # Starting aa in frame
                 end_aa = mcons.span()[1]         # End aa in frame
                 sta_nt = sta_aa*3 + offset       # Start nt in original seq
@@ -158,31 +150,39 @@ def v_search( locus_file, locus_type, last_v_nt=True, rev_dir=False ):
                 heptamer  = ''
                 spacer    = ''
                 nonamer   = ''
+                gap       = rules['gap']
                 post_cys2 = 0
-                flank = nts[end_nt:end_nt+60]
+                flank     = nts[end_nt:end_nt+60]
+                
                 for i in range(0,20):
-                    heptamer  = flank[i:i+7]
-                    spacer  = flank[i+7:i+7+23]
-                    nonamer = flank[i+7+23:i+7+23+9]
+                    pos       = i + 7
+                    heptamer  = flank[ i : pos ]
+                    spacer    = flank[ pos : pos+gap ]
+                    nonamer   = flank[ pos+gap : pos+gap+9 ]
     
-                    heptamer_match = sum(c1 == c2 for c1, c2 in zip(heptamer, ighv_heptamer_consensus))
-                    nonamer_match = sum(c1 == c2 for c1, c2 in zip(nonamer, ighv_nonamer_consensus))
-                    total_match = heptamer_match + nonamer_match
+                    # Summarize matches by each
+                    heptamer_match = sum( c1 == c2 for c1, c2 in zip( heptamer, rules['hept_cons'] ) )
+                    nonamer_match  = sum( c1 == c2 for c1, c2 in zip( nonamer, rules['nona_cons'] ) )
+                
+                    # Calculate total matches
+                    total_match    = heptamer_match + nonamer_match
 
-                    if heptamer[0:3] == ighv_heptamer_consensus[0:3]      \
-                        and heptamer_match >= ighv_min_heptamer_match \
-                        and nonamer_match >= ighv_min_nonamer_match   \
-                        and total_match >= ighv_min_total_match:
-                        end_nt += i
+                    # Verify matches meet minimum requirements
+                    if heptamer[0:3] == rules[ 'hept_cons' ][0:3]    \
+                    and heptamer_match >= rules[ 'hept_match_min' ]  \
+                    and nonamer_match >= rules[ 'nona_match_min' ]   \
+                    and total_match >= rules[ 'total_match_min' ] :
+                        
+                        end_nt   += i
                         post_cys2 = i
-                        found = True
+                        found     = True
                         break
     
                 # Set start of gene to 63 bases before first conserved Cys in IGH
                 # (Use 66 bases for IGK and IGL)
-                sta_nt  -= ighv_nt_before_cys1
+                sta_nt  -= rules['nt_before_cys1']
                 gene     = nts[sta_nt:end_nt]
-                aa       = frame[sta_aa - int(ighv_nt_before_cys1/3):end_aa + int(post_cys2/3)]
+                aa       = frame[sta_aa - int( rules['nt_before_cys1']/3 ) : end_aa + int( post_cys2/3 ) ]
                 gene_len = end_nt - sta_nt
                 
                 # Test V gene for stop codons
@@ -192,12 +192,12 @@ def v_search( locus_file, locus_type, last_v_nt=True, rev_dir=False ):
                     notes = ''
     
                 # Look for exact matches between discovered gene and known alleles
-                # Allow for the possibility that multiple alleles have same sequence
-                # Default assumption is that gene is not in database
+                #     - Default assumption is that gene is not known
+                # NOTE: Must allow for the possibility that multiple alleles have same sequence
     
                 allele = ''
                 for vallele, vseq in vseq_dict.items():
-                    if (gene == vseq) or (gene in vseq) or (vseq in gene):
+                    if ( gene == vseq ) or ( gene in vseq ) or ( vseq in gene ):
                         if allele:
                             allele += ', ' + vallele + ' ' + vtype_dict[vallele]
                         else: 
@@ -219,23 +219,23 @@ def v_search( locus_file, locus_type, last_v_nt=True, rev_dir=False ):
                     allele = 'Not in V ref database'
                 
                 if found:                
-                    vout.write(f"> {allele} | {gene_len} | {sta_nt} | {end_nt} | {heptamer} | {heptamer_match} | {nonamer} | {nonamer_match} | {spacer} | {total_match} | {notes} |\n")
+                    vout.write(f'> {allele} | {gene_len} | {sta_nt} | {end_nt} | {heptamer} | {heptamer_match} | {nonamer} | {nonamer_match} | {spacer} | {total_match} | {notes} |\n')
                     vout.write(gene)
-                    vout.write("\n\n")
+                    vout.write('\n\n')
                     
                     last_v_nt = end_nt # Keep track of where last V gene found
                 else:
-                    pseudogene_list.append(gene)
+                    pseudogenes_list.append(gene)
     
     vout.close()
     
     if pseudogenes_list:
         with open( pseudo_file, mode ) as pickle_file:
-            pickle.dump( pseudogene_list, pickle_file )
+            pickle.dump( pseudogenes_list, pickle_file )
         pickle_file.close()
         
     if last_v_nt:
         return last_v_nt
     
-def custom_v_search( locus_file, locus_type, last_v_nt=True ):
+def custom_v_search( locus_file, locus_type, force, last_v_nt=True ):
     return 0

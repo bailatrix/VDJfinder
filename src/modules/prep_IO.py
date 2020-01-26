@@ -4,6 +4,8 @@ from os.path import basename
 from os.path import isfile
 from os.path import getsize
 
+from os import getcwd
+
 # .fasta handling dependencies
 #    - used in prep_database()
 from Bio.SeqIO import parse
@@ -86,16 +88,68 @@ warnings = {
         }
     } 
 
-# Note: D genes are not found in all loci
-# Default booleans for d genes by locus type
-loci = {
-    'IGH': True,
-    'IGL': False,
-    'IGK': False,
-    'TRA': False,
-    'TRB': True
-    }
+##############################################################
+#                    SCREENING INPUTS                        #
+##############################################################
 
+# Private to public search() method
+# screen_locus_file():
+#    -
+# Parameters:
+#    -
+# Return:
+#    -
+def screen_locus_file ( in_file ):
+    try:
+        print('')
+    except :
+        print( 'ERROR' )
+        exit()
+
+# Private to public search() method
+# screen_locus_type():
+#    -
+# Parameters:
+#    -
+# Return:
+#    -
+def screen_locus_type ( in_locus ):
+    try:
+        all_ref_dbs[ in_locus ]
+    except KeyError:
+        print( f'ERROR:\t {in_locus} is not an available locus type.' )
+        exit()
+        
+# Private to public search() method
+# screen_():
+#    -
+# Parameters:
+#    -
+# Return:
+#    -
+def screen_genes ( in_locus, in_gene ):
+    try:
+        all_ref_dbs[ in_locus ][ in_gene ]
+    except KeyError:
+        print( f'ERROR:\t {in_gene} is not an available gene to search.' )
+        exit()
+        
+# Private to public search() method
+# screen_():
+#    -
+# Parameters:
+#    -
+# Return:
+#    -
+def screen_ ( in_ ):
+    try:
+        print('')
+    except :
+        print( 'ERROR' )
+        exit()
+
+##############################################################
+#                    SCREENING OUTPUTS                       #
 ##############################################################
 
 # Private to {gene}_search methods
@@ -108,17 +162,16 @@ loci = {
 #    - force: Boolean value, indicates whether to force overwrite in the event of duplicate file name
 # Return: 
 #    - file location+name and mode to use
-def prep_output( gene_file, pseudogenes=False, pref_name=False, force=False ):    
+def prep_output( locus_file, locus_type, gene, file_name, force ):    
+    dest_dir = getcwd()+'/data/genes/'+locus_type
     
     # support for alternate naming convention for files
-    if pref_name: out_name = pref_name    
-    elif pseudogenes:
-        out_name = basename(gene_file).replace('.fasta', '_pseudogenes_found.pickle')
+    if file_name: out_name = file_name    
     else:
-        out_name = basename(gene_file).replace('.fasta', '_found.fasta')
+        out_name = basename(locus_file).replace('.fasta', f'_{ locus_type+gene }_found.fasta')
 
     # format out_name to include file location
-    out_file = f'/home/baileyp/projects/VDJfinder/output/{out_name}'
+    out_file = f'{dest_dir}/{out_name}'
     
     # support for forced rewrite of file with duplicate name
     if force:
@@ -126,7 +179,7 @@ def prep_output( gene_file, pseudogenes=False, pref_name=False, force=False ):
     
     # optional user input to not rewrite duplicate file
     elif isfile(out_file) and getsize(out_file) > 0:
-        user = input(f"There is already a {out_name} file. Overwrite existing output? [y/n]\t")
+        user = input(f"There is already a(n) {out_name} file. Overwrite existing output? [y/n]\t")
         
         if user == 'y':
             print("Deleting existing file contents.")
@@ -139,6 +192,50 @@ def prep_output( gene_file, pseudogenes=False, pref_name=False, force=False ):
     else:
         return out_file, 'w'
 
+# Private to {gene}_search methods
+# prep_output():
+#    - preps output file to store search results
+# Parameters:
+#    - gene_file: file that is being searched, naming convention uses this file name as base
+#    - pseudogenes: Boolean value, indicates whether to alter naming convention to include 'pseudogenes'
+#    - pref_name: allows out_name to be passed as argument
+#    - force: Boolean value, indicates whether to force overwrite in the event of duplicate file name
+# Return: 
+#    - file location+name and mode to use
+def prep_output_pseudo( locus_file, locus_type, gene, file_name, force ):    
+    dest_dir = getcwd()+'/data/_unprocessed_'
+    
+    # support for alternate naming convention for files
+    if file_name: out_name = file_name    
+    else:
+        out_name = basename(locus_file).replace('.fasta', f'_{ locus_type+gene }_pseudogenes_found.pickle')
+
+    # format out_name to include file location
+    out_file = f'{dest_dir}/{out_name}'
+    
+    # support for forced rewrite of file with duplicate name
+    if force:
+        return out_file, 'wb'
+    
+    # optional user input to not rewrite duplicate file
+    elif isfile( out_file ) and getsize( out_file ) > 0:
+        user = input(f"There is already a {out_name} file. Overwrite existing output? [y/n]\t")
+        
+        if user == 'y':
+            print("Deleting existing file contents.")
+            return out_file, 'wb'
+        else:
+            print("Appending runtime contents to existing file.")
+            return out_file, 'ab'
+    
+    # out_file is unique
+    else:
+        return out_file, 'wb'
+    
+##############################################################
+#                    PREP SEARCH DATA                        #
+##############################################################
+    
 # Private to {gene}_search() methods
 # prep_database():
 #    - prepares local reference database as dictionaries

@@ -47,26 +47,7 @@ default = {
     }
 
 # Columns to organize values collected during search for output file
-out_columns = {
-    'allele': 'Allele',
-    'gene_len': 'Gene Length',
-    'st_nt': 'Start Nucleotide',
-    'end_nt': 'End Nucleotide',
-    'up_hept': 'Upstream Heptamer',
-    'up_hept_match': 'Upsteam Heptamer Match',
-    'up_nona': 'Upstream Nonamer',
-    'up_nona_match': 'Upstream Nonamer Match',
-    'up_spacer': 'Upstream Spacer',
-    'up_total_match': 'Upstream Total Match',
-    'down_hept': 'Downstream Heptamer',
-    'down_hept_match': 'Downstream Heptamer Match',
-    'down_nona': 'Downstream Nonamer',
-    'down_nona_match': 'Downstream Nonamer Match',
-    'down_spacer': 'Downstream Spacer',
-    'down_total_match': 'Downstream Total Match',
-    'total_match': 'Total Match',
-    'notes': 'Notes'
-   }
+out_columns = out_columns = "Allele | Gene Len | Start Nt | End Nt | Upstream Hept | Match | Upstream Nona | Match | Upstream Spacer | Upstream Total Match | Downstream Hept | Match | Downstream Nona | Match | Downstream Spacer | Downstream Total Match | Total Match | Notes |"
 
 class D_Gene ():
     
@@ -103,19 +84,21 @@ class D_Gene ():
         return self.rules
 
 # Search for d genes in given dgene_file based on given locus file
-def d_search( locus_file, locus_type, last_v_nt=True, rev_dir=False ):    
-    pseudogene_list = []
+def d_search( locus_file, locus_type, last_v_nt, pseudogenes, file_name, force, rev_dir=False ):    
+    pseudogenes_list = []
+    rules = default[locus_type]
     
-    # Prepare output file and build local reference database
-    d_file, mode = prep_IO.prep_output( locus_file )
-    dout = open( d_file, mode )
+    # Prepare output file(s)
+    d_file, d_mode = prep_IO.prep_output( locus_file, locus_type, 'D', file_name, force )
+    pseudo_file, mode = prep_IO.prep_output_pseudo( locus_file, locus_type, 'D', file_name, force )
+    
+    # Start output file and build local reference database
+    dout = open( d_file, d_mode )
     dseq_dict, dtype_dict = prep_IO.prep_database( locus_type, 'D' )
-    dout.write(f"> {out_columns} |\n\n\n")
-    
-    pseudo_file, mode = prep_IO.prep_output( locus_file, pseudogenes=True )
-
+    dout.write( f'> {out_columns} \n\n' )
+        
     # Read fasta sequence
-    for nt in SeqIO.parse(locus_file, "fasta"):
+    for nt in SeqIO.parse( locus_file, "fasta" ):
         
         if rev_dir:
             nt = nt.reverse_complement()
@@ -123,31 +106,33 @@ def d_search( locus_file, locus_type, last_v_nt=True, rev_dir=False ):
         nts = str(nt.seq).lower()
         aa_frame = prep_IO.prep_frame( nt )
     
-        # Read fasta sequence
-        for dseq in finditer( ighd_motif, nts ):
-            sta_nt = dseq.span()[0]
-            end_nt = dseq.span()[1]
-            gene = nts[sta_nt+7:end_nt-7]
-            upstream_heptamer = nts[sta_nt:sta_nt+7]
-            upstream_spacer = nts[sta_nt-12:sta_nt]
-            upstream_nonamer = nts[sta_nt-12-9:sta_nt-12]
-            downstream_heptamer = nts[end_nt-7:end_nt]
-            downstream_spacer = nts[end_nt:end_nt+12]
-            downstream_nonamer = nts[end_nt+12:end_nt+12+9]
-            gene_len = end_nt - sta_nt - 14
+        # Break down fasta sequence
+        for dseq in finditer( rules[ 'motif' ], nts ):
+            sta_nt              = dseq.span()[0]
+            end_nt              = dseq.span()[1]
+            gene                = nts[ sta_nt+7 : end_nt-7] 
+            upstream_heptamer   = nts[ sta_nt : sta_nt+7 ]
+            upstream_spacer     = nts[ sta_nt-12 : sta_nt ]
+            upstream_nonamer    = nts[ sta_nt-12-9 : sta_nt-12 ]
+            downstream_heptamer = nts[ end_nt-7 : end_nt ]
+            downstream_spacer   = nts[ end_nt : end_nt+12 ]
+            downstream_nonamer  = nts[ end_nt+12 : end_nt+12+9 ]
+            gene_len            = end_nt - sta_nt - 14
     
-            upstream_heptamer_match = sum(c1 == c2 for c1, c2 in zip(upstream_heptamer, ighd_upstream_heptamer_consensus))
-            upstream_nonamer_match = sum(c1 == c2 for c1, c2 in zip(upstream_nonamer, ighd_upstream_nonamer_consensus))
-            downstream_heptamer_match = sum(c1 == c2 for c1, c2 in zip(downstream_heptamer,ighd_downstream_heptamer_consensus))
-            downstream_nonamer_match = sum(c1 == c2 for c1, c2 in zip(downstream_nonamer, ighd_downstream_nonamer_consensus))
-    
-            upstream_total_match = upstream_heptamer_match + upstream_nonamer_match
+            # Summarize matches by each
+            upstream_heptamer_match   = sum(c1 == c2 for c1, c2 in zip(upstream_heptamer, rules[ 'up_hept_cons' ] ) )
+            upstream_nonamer_match    = sum(c1 == c2 for c1, c2 in zip(upstream_nonamer, rules[ 'up_nona_cons' ] ) )
+            downstream_heptamer_match = sum(c1 == c2 for c1, c2 in zip(downstream_heptamer, rules[ 'down_hept_cons' ] ) )
+            downstream_nonamer_match  = sum(c1 == c2 for c1, c2 in zip(downstream_nonamer, rules[ 'down_nona_cons' ] ) )
+            
+            # Calculate total matches
+            upstream_total_match   = upstream_heptamer_match + upstream_nonamer_match
             downstream_total_match = downstream_heptamer_match + downstream_nonamer_match
-            total_match = upstream_total_match + downstream_total_match
+            total_match            = upstream_total_match + downstream_total_match
     
             # Look for exact matches between discovered gene and known alleles
-            # Allow for the possibility that multiple alleles have same sequence
-            # Default assumption is that gene is not in database
+            #     - Default assumption is that gene is not known
+            # NOTE: Must allow for the possibility that multiple alleles have same sequence
     
             notes = ''
             allele = 'Not in D ref db'
@@ -161,28 +146,29 @@ def d_search( locus_file, locus_type, last_v_nt=True, rev_dir=False ):
             # Flag D genes that start before last V gene
             if last_v_nt and sta_nt < last_v_nt:
                 continue
-    
-            if upstream_heptamer_match >= ighd_min_upstream_heptamer_match              \
-                and upstream_nonamer_match >= ighd_min_upstream_nonamer_match       \
-                and downstream_heptamer_match >= ighd_min_downstream_heptamer_match \
-                and downstream_nonamer_match >= ighd_min_downstream_nonamer_match   \
-                and total_match >= ighd_min_total_match:
+                
+            # Verify matches meet minimum requirements
+            if upstream_heptamer_match >= rules[ 'up_hept_match_min' ]              \
+                and upstream_nonamer_match >= rules[ 'up_nona_match_min' ]          \
+                and downstream_heptamer_match >= rules[ 'down_hept_match_min' ]     \
+                and downstream_nonamer_match >= rules[ 'down_nona_match_min' ]      \
+                and total_match >= rules[ 'total_match_min' ]:
             
-                dout.write(f"> {allele} | {gene_len} | {sta_nt} | {end_nt} | {upstream_heptamer} | {upstream_heptamer_match} | {upstream_nonamer} | {upstream_nonamer_match} | {upstream_spacer} | {upstream_total_match} | {downstream_heptamer} | {downstream_heptamer_match} | {downstream_nonamer} | {downstream_nonamer_match} | {downstream_spacer} | {downstream_total_match} | {total_match} | {notes} |\n")
+                dout.write(f'> {allele} | {gene_len} | {sta_nt} | {end_nt} | {upstream_heptamer} | {upstream_heptamer_match} | {upstream_nonamer} | {upstream_nonamer_match} | {upstream_spacer} | {upstream_total_match} | {downstream_heptamer} | {downstream_heptamer_match} | {downstream_nonamer} | {downstream_nonamer_match} | {downstream_spacer} | {downstream_total_match} | {total_match} | {notes} |\n')
                 dout.write(gene)
-                dout.write("\n\n")  
+                dout.write('\n\n')  
             else:
-                pseudogene_list.append(gene)
+                pseudogenes_list.append(gene)
     
     dout.close()
     
-    if pseudogenes:
+    if pseudogenes_list:
         with open( pseudo_file, mode ) as pickle_file:
-            pickle.dump( pseudogene_list, pickle_file )
+            pickle.dump( pseudogenes_list, pickle_file )
         pickle_file.close()
     
     if last_v_nt:
         return last_v_nt
     
-def custom_d_search( locus_file, locus_type, last_v_nt=True ):
+def custom_d_search( locus_file, locus_type, force, last_v_nt=True ):
     return 0

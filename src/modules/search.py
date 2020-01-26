@@ -1,6 +1,7 @@
 from modules import v_gene
 from modules import d_gene
 from modules import j_gene
+from modules import prep_IO
 
 ############################
 # TODO:
@@ -33,40 +34,42 @@ def search_db( ):
 #    - custom_rules: Boolean value, defaults to False. If True, indicates user wants to search file with custom search values
 # Return:
 #    - No return value, but search programs called create respective '_found' files for genes
-def search( locus_file, locus_type, gene='ALL', custom_rules=False ):
+def search( locus_file, locus_type, gene='ALL', pseudogenes=False, custom_rules=False, file_name=False, force=False ):
     from sys import exc_info
     
     try:
-        
         locus_type = locus_type.upper()
         gene = gene.upper()
         
+        prep_IO.screen_locus_type( locus_type )
+        prep_IO.screen_locus_file( locus_file )
+        
         # Custom rules must be handled by separate search functions to handle IO properly
         if custom_rules:
-            if (gene == 'ALL') and (locus_type in ['IGH', 'TRB']):
+            if ( gene == 'ALL' ) and ( locus_type in ['IGH', 'TRB'] ):
                 
-                last_v_nt = v_gene.custom_v_search( locus_file, locus_type )
-                d_gene.custom_d_search( locus_file, locus_type, last_v_nt )
-                j_gene.custom_j_search( locus_file, locus_type, last_v_nt )
+                last_v_nt = v_gene.custom_v_search( locus_file, locus_type, pseudogenes, file_name, force )
+                d_gene.custom_d_search( locus_file, locus_type, last_v_nt, pseudogenes, file_name, force )
+                j_gene.custom_j_search( locus_file, locus_type, last_v_nt, pseudogenes, file_name, force )
         
-            elif (gene == 'ALL') and (locus_type in ['IGK', 'IGL', 'TRA']):
+            elif ( gene == 'ALL' ) and ( locus_type in ['IGK', 'IGL', 'TRA'] ):
         
-                last_v_nt = v_gene.custom_v_search( locus_file, locus_type )
-                j_gene.custom_j_search( locus_file, locus_type, last_v_nt )        
+                last_v_nt = v_gene.custom_v_search( locus_file, locus_type, pseudogenes, file_name, force )
+                j_gene.custom_j_search( locus_file, locus_type, last_v_nt, pseudogenes, file_name, force )        
         
         else:
             # Given standard search rules
-            if (gene == 'ALL') and (locus_type in ['IGH', 'TRB']):
+            if ( gene == 'ALL' ) and ( locus_type in ['IGH', 'TRB'] ):
                 
-                last_v_nt = v_gene.v_search( locus_file, locus_type )
-                d_gene.d_search( locus_file, locus_type, last_v_nt )
-                j_gene.j_search( locus_file, locus_type, last_v_nt )
+                last_v_nt = v_gene.v_search( locus_file, locus_type, pseudogenes, file_name, force )
+                d_gene.d_search( locus_file, locus_type, last_v_nt, pseudogenes, file_name, force )
+                j_gene.j_search( locus_file, locus_type, last_v_nt, pseudogenes, file_name, force )
                 
-            elif (gene == 'ALL') and (locus_type in ['IGK', 'IGL', 'TRA']):
+            elif ( gene == 'ALL' ) and ( locus_type in ['IGK', 'IGL', 'TRA'] ):
                 
-                last_v_nt = v_gene.v_search( locus_file, locus_type )
-                j_gene.j_search( locus_file, locus_type, last_v_nt )        
-    
+                last_v_nt = v_gene.v_search( locus_file, locus_type, pseudogenes, file_name, force )
+                j_gene.j_search( locus_file, locus_type, last_v_nt, pseudogenes, file_name, force ) 
+                
     # handle incorrect number of arguments passed
     except TypeError:
         print("Invalid input. search() takes at least 2 string inputs as arguments: locus_file and locus_type.")
