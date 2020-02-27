@@ -1,8 +1,9 @@
 # VDJfinder
-> A search tool for identifying V, D, and J gene segments in Ig and TCR loci. Optionally, supports identification of pseudogenes and scan of NCBI database.
+> A search tool for identifying V, D, and J gene segments in Ig and TCR loci. Optionally, supports identification of pseudogenes and scan of local NCBI database.
 
 
-__TODO:__
+__Project on Hold (1/15/2020)__
+Remaining Tasks:
 - implement screening methods for necessary search parameters:
     - locus_file
     - locus_type
@@ -10,6 +11,7 @@ __TODO:__
     - pref_name
     - custom_rules
 - implement support for outputing as .fasta file
+- implement support for scraping NCBI database
 
 
 ## Example Usage
